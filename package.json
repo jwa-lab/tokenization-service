@@ -1,0 +1,45 @@
+{
+  "name": "tokenization-service",
+  "version": "0.0.1",
+  "description": "Tokenization Service for Tezos",
+  "main": "dist/index.js",
+  "scripts": {
+    "prettier": "npx prettier --write .",
+    "lint": "eslint ./src/ --ext .ts",
+    "clean": "rm -rf ./dist/*",
+    "build": "npx tsc ./src/index.ts --outFile ./dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jwa-lab/tokenization-service.git"
+  },
+  "keywords": [
+    "Tezos",
+    "Nats",
+    "Nats.io",
+    "Node",
+    "Node.js",
+    "Smart",
+    "Contracts",
+    "NFT",
+    "Token",
+    "Tokenization",
+    "Service",
+    "Taquito"
+  ],
+  "author": "JWA Lab",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jwa-lab/tokenization-service/issues"
+  },
+  "homepage": "https://github.com/jwa-lab/tokenization-service#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/parser": "^4.1.1",
+    "eslint": "^7.9.0",
+    "prettier": "2.1.2",
+    "typescript": "^4.0.3"
+  }
+}
