@@ -1,0 +1,16 @@
+#! /usr/bin/env bash
+
+export NATS_URL=nats://localhost:4222
+export TEZOS_RPC_URI=http://localhost:20000
+export REGISTRY_TEZOS_SECRET_KEY=edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq  
+export REGISTRY_CONTRACT_ADDRESS=KT1DYj3Kt4Zv1h5cKu2wBfcksSxZqC5WBtYw
+
+function start() {
+    node dist/index.js
+}
+
+function build() {
+    npm run build
+}
+
+"$@"
