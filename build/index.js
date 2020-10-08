@@ -9,17 +9,18 @@ async function start() {
     try {
         await nats_1.init();
         await tezos_1.init();
-        const natsSubscriptions = await nats_1.registerHandlers(registry_1.registryHandlers);
+        const natsSubscriptions = await nats_1.registerHandlers(
+            registry_1.registryHandlers
+        );
         cleanUp = () => {
             nats_1.natsUnsubscribe(natsSubscriptions);
             nats_1.close();
         };
-        process.on('SIGINT', () => {
-            console.log('Gracefully shutting down...');
+        process.on("SIGINT", () => {
+            console.log("Gracefully shutting down...");
             cleanUp();
         });
-    }
-    catch (err) {
+    } catch (err) {
         console.error(`Tokenization Service exited with error: ${err}`);
         process.exit(1);
     }

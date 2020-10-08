@@ -1,8 +1,8 @@
-const { connect } = require('ts-nats')
+const { connect } = require("ts-nats");
 
 // temporary test, needs ugprade to actual test suite
 async function init() {
-    const natsClient = await connect()
+    const natsClient = await connect();
 
     // natsClient.publish('add_token', JSON.stringify({
     //         decimals: 0,
@@ -14,8 +14,7 @@ async function init() {
     //         token_id: 0
     //     }));
 
-    natsClient.publish('get_token', "1");
-
+    natsClient.publish("get_token", "1");
 }
 
-init()
+init();

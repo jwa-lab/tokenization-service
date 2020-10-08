@@ -7,12 +7,14 @@ let natsClient;
 async function init() {
     console.log(`Connecting to NATS server ${config_1.NATS_URL}...`);
     natsClient = await ts_nats_1.connect({
-        servers: [config_1.NATS_URL]
+        servers: [config_1.NATS_URL],
     });
 }
 exports.init = init;
 async function registerHandlers(handlers) {
-    return await Promise.all(handlers.map(([topic, handler]) => natsClient.subscribe(topic, handler)));
+    return await Promise.all(
+        handlers.map(([topic, handler]) => natsClient.subscribe(topic, handler))
+    );
 }
 exports.registerHandlers = registerHandlers;
 function natsUnsubscribe(natsSubscriptions) {
