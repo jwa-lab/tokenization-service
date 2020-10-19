@@ -14,7 +14,7 @@ Reads are often performed on a Tezos indexer instead of running a Smart Contract
 
 1. Start a minilab locally: https://github.com/jwa-lab/minilab
 2. Install this service's contract: https://github.com/jwa-lab/tokenization-service-contracts
-3. The build this service
+3. Then build this service
 
 ```
 ./run build
@@ -54,3 +54,13 @@ And edit the `./run` script
 ```
 ./run start
 ```
+
+### Develop
+
+To run this service in `develop` mode, simply run 
+
+```
+./run dev
+```
+
+This will run a `nodemon` checking when files change and automatically restarting the recompiled Typescript sources.

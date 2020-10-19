@@ -13,31 +13,30 @@ export type NatsHandler = [topic: string, handler: MsgCallback];
 let natsClient: Client;
 
 export async function init(): Promise<void> {
-    console.log(`Connecting to NATS server ${NATS_URL}...`);
+    console.log(`[NATS] Connecting to NATS server ${NATS_URL}...`);
 
     natsClient = await connect({
         url: NATS_URL,
     });
 
     natsClient.on("connect", () => {
-        console.log("Connected");
+        console.log("[NATS] Connected");
     });
 
     natsClient.on("disconnected", () => {
-        console.log("Disconnected");
+        console.log("[NATS] Disconnected");
     });
 
     natsClient.on("reconnecting", () => {
-        console.log("client reconnecting");
+        console.log("[NATS] client reconnecting");
     });
 
     natsClient.on("reconnect", () => {
-        console.log("client reconnected");
+        console.log("[NATS] client reconnected");
     });
 
     natsClient.on("error", (err) => {
-        console.error("Err", err);
-        shutdown();
+        console.error("[NATS] Err", err);
     });
 }
 
@@ -64,11 +63,6 @@ export function getClient(): Client {
     return natsClient;
 }
 
-export function shutdown(): void {
-    natsClient.close();
-    process.exit(1);
-}
-
 function handleErrors(handler: MsgCallback) {
     return async function wrappedHandler(
         wrappedNatsError: NatsError,
@@ -78,7 +72,6 @@ function handleErrors(handler: MsgCallback) {
             await handler(wrappedNatsError, wrappedMsg);
         } catch (err) {
             console.error(err);
-            shutdown();
         }
     };
 }

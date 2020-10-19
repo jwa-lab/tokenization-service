@@ -1,19 +1,25 @@
-console.log(`Starting Tokenization Service...`);
+console.log(`[TOKENIZATION-SERVICE] Starting Tokenization Service...`);
 
 import {
     init as initNats,
     registerHandlers,
     natsUnsubscribe,
-    close,
-    shutdown,
+    close as closeNats,
 } from "./nats";
 import { init as initTezos } from "./tezos";
-import { init as initES } from "./elasticsearch";
+import { init as initES, close as closeES } from "./elasticsearch";
 
 import { registryHandlers } from "./handlers/registry";
 
 async function start() {
     let cleanUp: () => void;
+
+    function shutdown(exitCode: number) {
+        cleanUp()
+        closeNats()
+        closeES()
+        process.exit(exitCode)
+    }
 
     try {
         await initNats()
@@ -24,19 +30,21 @@ async function start() {
 
         cleanUp = () => {
             natsUnsubscribe(natsSubscriptions);
-            close();
         };
 
         process.on("SIGINT", () => {
-            console.log("Gracefully shutting down...");
-            cleanUp();
-            shutdown();
+            console.log("[TOKENIZATION-SERVICE] Gracefully shutting down...");
+            shutdown(0);
+        });
+        process.on("SIGTERM", () => {
+            console.log("[TOKENIZATION-SERVICE] Gracefully shutting down...");
+            shutdown(0);
         });
     } catch (err) {
-        console.error(`Tokenization Service exited with error: ${err}`);
+        console.error(`[TOKENIZATION-SERVICE] Tokenization Service exited with error: ${err}`);
         console.error(err);
-        shutdown();
-    }
+        shutdown(1)
+    }   
 }
 
 start();

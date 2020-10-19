@@ -10,7 +10,7 @@ import { TEZOS_RPC_URI, REGISTRY_TEZOS_SECRET_KEY } from "./config";
 let tezosClient: TezosToolkit;
 
 export async function init(): Promise<void> {
-    console.log(`Using Tezos RPC URI ${TEZOS_RPC_URI}`);
+    console.log(`[TEZOS] Using Tezos RPC URI ${TEZOS_RPC_URI}`);
 
     tezosClient = new TezosToolkit();
     tezosClient.setProvider({
