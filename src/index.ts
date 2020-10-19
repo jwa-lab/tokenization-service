@@ -8,6 +8,7 @@ import {
     shutdown,
 } from "./nats";
 import { init as initTezos } from "./tezos";
+import { init as initES } from "./elasticsearch";
 
 import { registryHandlers } from "./handlers/registry";
 
@@ -15,8 +16,9 @@ async function start() {
     let cleanUp: () => void;
 
     try {
-        await initNats();
+        await initNats()
         await initTezos();
+        await initES();
 
         const natsSubscriptions = await registerHandlers(registryHandlers);
 

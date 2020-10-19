@@ -2,6 +2,7 @@
 
 export NATS_URL=nats://localhost:4222
 export TEZOS_RPC_URI=http://localhost:20000
+export ELASTICSEARCH_URI=http://localhost:9200
 export REGISTRY_TEZOS_SECRET_KEY=edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq  
 export REGISTRY_CONTRACT_ADDRESS=KT1WpVpKdDs3o3PUcwyapJX4N2XGyJUV9YMm
 

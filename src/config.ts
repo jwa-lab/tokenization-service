@@ -5,6 +5,7 @@ const {
     TEZOS_RPC_URI = "",
     REGISTRY_TEZOS_SECRET_KEY = "",
     REGISTRY_CONTRACT_ADDRESS = "",
+    ELASTICSEARCH_URI = ""
 } = process.env;
 
 if (!TEZOS_RPC_URI) {
@@ -31,9 +32,16 @@ if (!validateAddress(REGISTRY_CONTRACT_ADDRESS)) {
     );
 }
 
+if (typeof ELASTICSEARCH_URI === "undefined") {
+    throw new Error(
+        `Please provide a valid ELASTICSEARCH_URI so the service can connect to Elasticsearch. For example, use http://localhost:9200`
+    )
+}
+
 export {
-    TEZOS_RPC_URI,
+    ELASTICSEARCH_URI,
     NATS_URL,
-    REGISTRY_TEZOS_SECRET_KEY,
     REGISTRY_CONTRACT_ADDRESS,
+    REGISTRY_TEZOS_SECRET_KEY,
+    TEZOS_RPC_URI
 };
