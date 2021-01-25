@@ -2,10 +2,11 @@ import { TransactionOperation } from "@taquito/taquito/dist/types/operations/tra
 import { WarehouseContract } from "./warehouse.types";
 import { Collectible } from "./collectible";
 
-export function add_token(
+export function add_item(
     contract: WarehouseContract,
     collectible: Collectible
 ): Promise<TransactionOperation> {
+    console.log(collectible)
     return contract.methods
         .add_item(...collectible.toMichelsonArguments())
         .send();
@@ -26,7 +27,7 @@ export async function freeze_item(
     
 ): Promise<TransactionOperation> {
     return await contract.methods
-        .freeze_item(...collectible.toMichelsonArguments())
+        .freeze_item(collectible.item_id)
         .send();
 }
 

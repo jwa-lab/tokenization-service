@@ -5,7 +5,7 @@ import {
 } from "@taquito/taquito";
 import { importKey } from "@taquito/signer";
 
-import { TEZOS_RPC_URI, REGISTRY_TEZOS_SECRET_KEY } from "./config";
+import { TEZOS_RPC_URI, WAREHOUSE_TEZOS_SECRET_KEY } from "./config";
 
 let tezosClient: TezosToolkit;
 
@@ -23,7 +23,7 @@ export async function init(): Promise<void> {
         },
     });
 
-    await importKey(tezosClient, REGISTRY_TEZOS_SECRET_KEY);
+    await importKey(tezosClient, WAREHOUSE_TEZOS_SECRET_KEY);
 }
 
 export async function getContract<

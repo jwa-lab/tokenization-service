@@ -1,50 +1,45 @@
 import { MichelsonMap } from "@taquito/taquito";
 
 export interface MichelsonCollectible {
-    decimals: number;
-    extras: MichelsonMap<string, string>;
-    name: string;
-    symbol: string;
-    token_id: number;
-    [key: string]: number | MichelsonMap<string, string> | string;
+    data: MichelsonMap<string, string>;
+    item_id: number;
+    no_update_after: string | undefined;
+    quantity: number;
+    [key: string]: number | MichelsonMap<string, string> | string | undefined;
 }
 
-export interface CollectibleExtras {
+export interface CollectibleData {
     [k: string]: string;
 }
 
 type LinearCollectible = [
-    number,
     MichelsonMap<string, string>,
-    string,
-    string,
+    number,
+    string | undefined,
     number
 ];
 
 export class Collectible {
-    readonly decimals: number;
-    readonly extras: CollectibleExtras;
-    readonly name: string;
-    readonly symbol: string;
-    readonly token_id: number;
+    readonly data: CollectibleData;
+    readonly item_id: number;
+    readonly no_update_after: string | undefined;
+    readonly quantity: number;
 
     constructor(object: { [k: string]: unknown }) {
-        this.decimals = getKey(object, "decimals") as number;
-        this.extras = getKey(object, "extras") as CollectibleExtras;
-        this.name = getKey(object, "name") as string;
-        this.symbol = getKey(object, "symbol") as string;
-        this.token_id = getKey(object, "token_id") as number;
+        this.data = getKey(object, "data") as CollectibleData;
+        this.item_id = getKey(object, "item_id") as number;
+        this.no_update_after = object.no_update_after as string | undefined;
+        this.quantity = getKey(object, "quantity") as number;
 
-        this.validateExtras(this.extras);
+        this.validateData(this.data);
     }
 
     toMichelsonArguments(): LinearCollectible {
         const collectible = {
-            decimals: this.decimals,
-            extras: MichelsonMap.fromLiteral(this.extras),
-            name: this.name,
-            symbol: this.symbol,
-            token_id: this.token_id,
+            data: MichelsonMap.fromLiteral(this.data),
+            item_id: this.item_id,
+            no_update_after: this.no_update_after,
+            quantity: this.quantity,
         } as MichelsonCollectible;
 
         return Object.keys(collectible)
@@ -55,13 +50,13 @@ export class Collectible {
     static fromMichelson(michelson: MichelsonCollectible): Collectible {
         return new Collectible({
             ...michelson,
-            extras: mapToObj(michelson.extras),
+            data: mapToObj(michelson.data),
         });
     }
 
-    private validateExtras(extras: CollectibleExtras): void {
-        if (Object.values(extras).some((extra) => typeof extra !== "string")) {
-            throw new Error(`Collectible: Extras must be 'string'`);
+    private validateData(data: CollectibleData): void {
+        if (Object.values(data).some((datum) => typeof datum !== "string")) {
+            throw new Error(`Collectible: Data must be 'string'`);
         }
     }
 }
