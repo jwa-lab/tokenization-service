@@ -3,8 +3,8 @@ import { validateAddress } from "@taquito/utils";
 const {
     NATS_URL = "",
     TEZOS_RPC_URI = "",
-    REGISTRY_TEZOS_SECRET_KEY = "",
-    REGISTRY_CONTRACT_ADDRESS = "",
+    WAREHOUSE_TEZOS_SECRET_KEY = "",
+    WAREHOUSE_CONTRACT_ADDRESS = "",
     ELASTICSEARCH_URI = ""
 } = process.env;
 
@@ -20,15 +20,15 @@ if (typeof NATS_URL === "undefined") {
     );
 }
 
-if (!REGISTRY_TEZOS_SECRET_KEY) {
+if (!WAREHOUSE_TEZOS_SECRET_KEY) {
     throw new Error(
-        `Please provide an uncrypted private key to sign transactions with via REGISTRY_SECRET_KEY.`
+        `Please provide an uncrypted private key to sign transactions with via WAREHOUSE_SECRET_KEY.`
     );
 }
 
-if (!validateAddress(REGISTRY_CONTRACT_ADDRESS)) {
+if (!validateAddress(WAREHOUSE_CONTRACT_ADDRESS)) {
     throw new Error(
-        `Please provide a valid KT1 address to access the registry via REGISTRY_CONTRACT_ADDRESS`
+        `Please provide a valid KT1 address to access the WAREHOUSE via WAREHOUSE_CONTRACT_ADDRESS`
     );
 }
 
@@ -41,7 +41,7 @@ if (typeof ELASTICSEARCH_URI === "undefined") {
 export {
     ELASTICSEARCH_URI,
     NATS_URL,
-    REGISTRY_CONTRACT_ADDRESS,
-    REGISTRY_TEZOS_SECRET_KEY,
+    WAREHOUSE_CONTRACT_ADDRESS,
+    WAREHOUSE_TEZOS_SECRET_KEY,
     TEZOS_RPC_URI
 };

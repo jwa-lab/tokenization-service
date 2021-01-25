@@ -25,31 +25,33 @@ To run the service, you need to locate the newly deployed contract's KT1 address
 ```
 # After deploying the smart contract, find the Kt1 address here:
 
-2_registry_migration.js
-=======================
+2_warehouse_migration.js
+========================
 
-   Replacing 'Registry'
-   --------------------
-   > operation hash:      opCjc7Wz9vTfRGte8zwRCrW3P9daESUyaTj6hK9ypEVYo5AeaEq
-   > Blocks: 0            Seconds: 8
-   > contract address:    _KT1WpVpKdDs3o3PUcwyapJX4N2XGyJUV9YMm_
-   > block number:        5
-   > block timestamp:     2020-10-08T15:39:12Z
+   Deploying 'Warehouse'
+   ---------------------
+   > operation hash:      ooF629Q1rK4KUnP4GHNKitMbKJPB2Nb5tWuD4D8vEmiN53TP5ad
+   > Blocks: 0            Seconds: 12
+   > contract address:    KT1RedbZ6vuAgTqBeJMiHGcvhkMLCUBKVGN9
+   > block number:        15
+   > block timestamp:     2021-01-25T04:08:37Z
    > account:             tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb
-   > balance:             1999998.559226
-   > gas used:            28348
-   > storage used:        725 bytes
-   > fee spent:           3.804 mtz
-   > burn cost:           0.982 tez
+   > balance:             1999997.88266
+   > gas used:            49158
+   > storage used:        1397 bytes
+   > fee spent:           6.571 mtz
+   > burn cost:           1.654 tez
    > value sent:          0 XTZ
-   > total cost:          0.985804 XTZ
+   > total cost:          1.660571 XTZ
 
+
+   > Saving migration to chain.
    > Saving artifacts
    -------------------------------------
-   > Total cost:            0.985804 XTZ
+   > Total cost:            1.660571 XTZ
 ```
 
-And edit the `./run` script
+And edit the `./run` script, set `WAREHOUSE_CONTRACT_ADDRESS=KT1RedbZ6vuAgTqBeJMiHGcvhkMLCUBKVGN9`
 
 ```
 ./run start
@@ -64,3 +66,16 @@ To run this service in `develop` mode, simply run
 ```
 
 This will run a `nodemon` checking when files change and automatically restarting the recompiled Typescript sources.
+
+
+### Test
+
+To test this service, follow the steps listed in `How to setup Dev environment`
+
+Then:
+
+```
+node tests/test.js
+```
+
+It should create a new item and output it back after creation.

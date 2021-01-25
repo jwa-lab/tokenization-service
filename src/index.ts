@@ -9,7 +9,7 @@ import {
 import { init as initTezos } from "./tezos";
 import { init as initES, close as closeES } from "./elasticsearch";
 
-import { registryHandlers } from "./handlers/registry";
+import { warehouseHandlers } from "./handlers/warehouse";
 
 async function start() {
     let cleanUp: () => void;
@@ -26,7 +26,7 @@ async function start() {
         await initTezos();
         await initES();
 
-        const natsSubscriptions = await registerHandlers(registryHandlers);
+        const natsSubscriptions = await registerHandlers(warehouseHandlers);
 
         cleanUp = () => {
             natsUnsubscribe(natsSubscriptions);

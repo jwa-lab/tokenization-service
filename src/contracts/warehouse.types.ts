@@ -30,7 +30,7 @@ export interface WarehouseContract extends Contract {
         ): ContractMethod<ContractProvider>;
 
         freeze_item(
-            token_id: number
+            item_id: number
         ): ContractMethod<ContractProvider>;
     };
 }

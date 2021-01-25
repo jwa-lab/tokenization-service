@@ -3,7 +3,7 @@ import { NatsHandler } from "../nats";
 import { getContract } from "../tezos";
 import { WAREHOUSE_CONTRACT_ADDRESS } from "../config";
 import { WarehouseContract, WarehouseStorage } from "../contracts/warehouse.types";
-import { add_token, update_item, freeze_item } from "../contracts/warehouse";
+import { add_item, update_item, freeze_item } from "../contracts/warehouse";
 import { Collectible, MichelsonCollectible } from "../contracts/collectible";
 
 export const warehouseHandlers: NatsHandler[] = [
@@ -16,9 +16,9 @@ export const warehouseHandlers: NatsHandler[] = [
 
             const collectible = new Collectible(JSON.parse(msg.data));
 
-            console.log(`Adding token with id ${collectible.item_id}`);
+            console.log(`Adding item with id ${collectible.item_id}`);
 
-            const operation = await add_token(warehouseContract, collectible);
+            const operation = await add_item(warehouseContract, collectible);
 
             await operation.confirmation(1, 1);
         },
@@ -32,7 +32,7 @@ export const warehouseHandlers: NatsHandler[] = [
 
             const collectible = new Collectible(JSON.parse(msg.data));
 
-            console.log(`Updating token with id ${collectible.item_id}`);
+            console.log(`Updating item with id ${collectible.item_id}`);
 
             const operation = await update_item(warehouseContract, collectible);
 
@@ -49,7 +49,7 @@ export const warehouseHandlers: NatsHandler[] = [
 
             const collectible = new Collectible(JSON.parse(msg.data));
 
-            console.log(`Freezing token with id ${collectible.token_id}`);
+            console.log(`Freezing item with id ${collectible.item_id}`);
 
             const operation = await freeze_item(warehouseContract, collectible);
 
@@ -59,7 +59,7 @@ export const warehouseHandlers: NatsHandler[] = [
 
 
     [
-        "get_token",
+        "get_item",
         async (err: NatsError | null, msg: Msg): Promise<void> => {
             const warehouseContract = await getContract<WarehouseContract>(
                 WAREHOUSE_CONTRACT_ADDRESS
