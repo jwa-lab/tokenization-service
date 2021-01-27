@@ -2,14 +2,20 @@ import { Msg, NatsError } from "ts-nats";
 import { NatsHandler } from "../nats";
 import { getContract } from "../tezos";
 import { WAREHOUSE_CONTRACT_ADDRESS } from "../config";
-import { WarehouseContract, WarehouseStorage } from "../contracts/warehouse.types";
+import {WarehouseContract,WarehouseStorage} from "../contracts/warehouse.types";
 import { add_item, update_item, freeze_item } from "../contracts/warehouse";
 import { Collectible, MichelsonCollectible } from "../contracts/collectible";
+import { getClient } from "../nats";
 
 export const warehouseHandlers: NatsHandler[] = [
     [
         "add_item",
-        async (err: NatsError | null, msg: Msg): Promise<void> => {
+        async (
+            err: NatsError | null,
+            msg: Msg,
+            replyTo: string
+        ): Promise<void> => {
+            const client = getClient();
             const warehouseContract = await getContract<WarehouseContract>(
                 WAREHOUSE_CONTRACT_ADDRESS
             );
@@ -21,11 +27,21 @@ export const warehouseHandlers: NatsHandler[] = [
             const operation = await add_item(warehouseContract, collectible);
 
             await operation.confirmation(1, 1);
+
+            client.publish(
+                replyTo,
+                `add_item is running, got ${collectible.item_id}`
+            );
         },
     ],
     [
         "update_item",
-        async (err: NatsError | null, msg: Msg): Promise<void> => {
+        async (
+            err: NatsError | null,
+            msg: Msg,
+            replyTo: string
+        ): Promise<void> => {
+            const client = getClient();
             const warehouseContract = await getContract<WarehouseContract>(
                 WAREHOUSE_CONTRACT_ADDRESS
             );
@@ -37,12 +53,22 @@ export const warehouseHandlers: NatsHandler[] = [
             const operation = await update_item(warehouseContract, collectible);
 
             await operation.confirmation(1, 1);
+
+            client.publish(
+                replyTo,
+                `update_item is running, got ${collectible.item_id}`
+            );
         },
     ],
 
     [
         "freeze_item",
-        async (err: NatsError | null, msg: Msg): Promise<void> => {
+        async (
+            err: NatsError | null,
+            msg: Msg,
+            replyTo: string
+        ): Promise<void> => {
+            const client = getClient();
             const warehouseContract = await getContract<WarehouseContract>(
                 WAREHOUSE_CONTRACT_ADDRESS
             );
@@ -54,13 +80,22 @@ export const warehouseHandlers: NatsHandler[] = [
             const operation = await freeze_item(warehouseContract, collectible);
 
             await operation.confirmation(1, 1);
+
+            client.publish(
+                replyTo,
+                `freeze_item is running, got ${collectible.item_id}`
+            );
         },
     ],
 
-
     [
         "get_item",
-        async (err: NatsError | null, msg: Msg): Promise<void> => {
+        async (
+            err: NatsError | null,
+            msg: Msg,
+            replyTo: string
+        ): Promise<void> => {
+            const client = getClient();
             const warehouseContract = await getContract<WarehouseContract>(
                 WAREHOUSE_CONTRACT_ADDRESS
             );
@@ -71,7 +106,7 @@ export const warehouseHandlers: NatsHandler[] = [
                 const collectible = (await storage.warehouse.get(
                     msg.data
                 )) as MichelsonCollectible;
-                console.log(Collectible.fromMichelson(collectible));
+                client.publish(replyTo, Collectible.fromMichelson(collectible));
             } catch (err) {
                 console.error(err);
             }
