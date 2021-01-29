@@ -56,7 +56,7 @@ export const warehouseHandlers: NatsHandler[] = [
 
             client.publish(
                 replyTo,
-                `update_item is running, got ${collectible.item_id}`
+               collectible.item_id
             );
         },
     ],
