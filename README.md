@@ -59,14 +59,13 @@ And edit the `./run` script, set `WAREHOUSE_CONTRACT_ADDRESS=KT1RedbZ6vuAgTqBeJM
 
 ### Develop
 
-To run this service in `develop` mode, simply run 
+To run this service in `develop` mode, simply run
 
 ```
 ./run dev
 ```
 
 This will run a `nodemon` checking when files change and automatically restarting the recompiled Typescript sources.
-
 
 ### Test
 

@@ -4,7 +4,7 @@ import {
     init as initNats,
     registerHandlers,
     natsUnsubscribe,
-    close as closeNats,
+    close as closeNats
 } from "./nats";
 import { init as initTezos } from "./tezos";
 import { init as initES, close as closeES } from "./elasticsearch";
@@ -15,14 +15,14 @@ async function start() {
     let cleanUp: () => void;
 
     function shutdown(exitCode: number) {
-        cleanUp()
-        closeNats()
-        closeES()
-        process.exit(exitCode)
+        cleanUp();
+        closeNats();
+        closeES();
+        process.exit(exitCode);
     }
 
     try {
-        await initNats()
+        await initNats();
         await initTezos();
         await initES();
 
@@ -41,10 +41,12 @@ async function start() {
             shutdown(0);
         });
     } catch (err) {
-        console.error(`[TOKENIZATION-SERVICE] Tokenization Service exited with error: ${err}`);
+        console.error(
+            `[TOKENIZATION-SERVICE] Tokenization Service exited with error: ${err}`
+        );
         console.error(err);
-        shutdown(1)
-    }   
+        shutdown(1);
+    }
 }
 
 start();

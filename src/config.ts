@@ -35,7 +35,7 @@ if (!validateAddress(WAREHOUSE_CONTRACT_ADDRESS)) {
 if (typeof ELASTICSEARCH_URI === "undefined") {
     throw new Error(
         `Please provide a valid ELASTICSEARCH_URI so the service can connect to Elasticsearch. For example, use http://localhost:9200`
-    )
+    );
 }
 
 export {

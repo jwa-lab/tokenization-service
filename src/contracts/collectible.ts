@@ -1,15 +1,27 @@
 import { MichelsonMap } from "@taquito/taquito";
+import { BigNumber } from "bignumber.js";
 
 export interface MichelsonCollectible {
     data: MichelsonMap<string, string>;
-    item_id: number;
+    item_id: BigNumber;
     no_update_after: string | undefined;
-    quantity: number;
-    [key: string]: number | MichelsonMap<string, string> | string | undefined;
+    quantity: BigNumber;
+    [key: string]:
+        | MichelsonMap<string, string>
+        | string
+        | BigNumber
+        | undefined;
 }
 
 export interface CollectibleData {
     [k: string]: string;
+}
+
+export interface JSONCollectible {
+    no_update_after: string | undefined;
+    item_id: number;
+    data: { [k: string]: string };
+    quantity: number;
 }
 
 type LinearCollectible = [
@@ -21,15 +33,15 @@ type LinearCollectible = [
 
 export class Collectible {
     readonly data: CollectibleData;
-    readonly item_id: number;
+    readonly item_id: BigNumber;
     readonly no_update_after: string | undefined;
-    readonly quantity: number;
+    readonly quantity: BigNumber;
 
     constructor(object: { [k: string]: unknown }) {
         this.data = getKey(object, "data") as CollectibleData;
-        this.item_id = getKey(object, "item_id") as number;
+        this.item_id = getKey(object, "item_id") as BigNumber;
         this.no_update_after = object.no_update_after as string | undefined;
-        this.quantity = getKey(object, "quantity") as number;
+        this.quantity = getKey(object, "quantity") as BigNumber;
 
         this.validateData(this.data);
     }
@@ -39,7 +51,7 @@ export class Collectible {
             data: MichelsonMap.fromLiteral(this.data),
             item_id: this.item_id,
             no_update_after: this.no_update_after,
-            quantity: this.quantity,
+            quantity: this.quantity
         } as MichelsonCollectible;
 
         return Object.keys(collectible)
@@ -47,11 +59,15 @@ export class Collectible {
             .map((key: string) => collectible[key]) as LinearCollectible;
     }
 
-    static fromMichelson(michelson: MichelsonCollectible): Collectible {
-        return new Collectible({
-            ...michelson,
-            data: mapToObj(michelson.data),
-        });
+    static fromMichelson(michelson: MichelsonCollectible): JSONCollectible {
+        return {
+            no_update_after: michelson.no_update_after
+                ? getISODateNoMs(new Date(michelson.no_update_after))
+                : undefined,
+            item_id: michelson.item_id.toNumber(),
+            quantity: michelson.quantity.toNumber(),
+            data: Object.fromEntries(michelson.data.entries())
+        };
     }
 
     private validateData(data: CollectibleData): void {
@@ -71,10 +87,7 @@ function getKey(object: { [k: string]: unknown }, key: string) {
     }
 }
 
-function mapToObj(map: MichelsonMap<string, string>) {
-    const obj = Object.create(null);
-
-    map.forEach(([k, v]) => (obj[k] = v));
-
-    return obj;
+function getISODateNoMs(date = new Date()) {
+    date.setMilliseconds(0);
+    return date.toISOString();
 }

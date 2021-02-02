@@ -6,7 +6,7 @@ export function add_item(
     contract: WarehouseContract,
     collectible: Collectible
 ): Promise<TransactionOperation> {
-    console.log(collectible)
+    console.log(collectible);
     return contract.methods
         .add_item(...collectible.toMichelsonArguments())
         .send();
@@ -23,11 +23,7 @@ export async function update_item(
 
 export async function freeze_item(
     contract: WarehouseContract,
-    collectible: Collectible
-    
+    item_id: number
 ): Promise<TransactionOperation> {
-    return await contract.methods
-        .freeze_item(collectible.item_id)
-        .send();
+    return await contract.methods.freeze_item(item_id).send();
 }
-
