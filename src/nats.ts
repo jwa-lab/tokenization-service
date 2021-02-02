@@ -4,7 +4,7 @@ import {
     MsgCallback,
     Subscription,
     NatsError,
-    Msg,
+    Msg
 } from "ts-nats";
 import { NATS_URL } from "./config";
 
@@ -16,7 +16,7 @@ export async function init(): Promise<void> {
     console.log(`[NATS] Connecting to NATS server ${NATS_URL}...`);
 
     natsClient = await connect({
-        url: NATS_URL,
+        url: NATS_URL
     });
 
     natsClient.on("connect", () => {
