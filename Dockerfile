@@ -1,7 +1,6 @@
 FROM node:12-alpine
 
-RUN adduser -D tokenization-service
-USER tokenization-service
+USER node
 
 WORKDIR /app
 

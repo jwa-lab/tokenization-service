@@ -1,77 +1,51 @@
-import {
-    connect,
-    Client,
-    MsgCallback,
-    Subscription,
-    NatsError,
-    Msg
-} from "ts-nats";
+import { connect, NatsConnection, Subscription, JSONCodec } from "nats";
 import { NATS_URL } from "./config";
 
-export type NatsHandler = [topic: string, handler: MsgCallback];
+export type NatsHandler = [
+    topic: string,
+    handler: (subscription: Subscription) => void
+];
 
-let natsClient: Client;
+let natsConnection: NatsConnection;
 
 export async function init(): Promise<void> {
-    console.log(`[NATS] Connecting to NATS server ${NATS_URL}...`);
+    try {
+        natsConnection = await connect({
+            servers: NATS_URL
+        });
+    } catch (err) {
+        console.log(`error connecting to nats: ${err.message}`);
+        return;
+    }
 
-    natsClient = await connect({
-        url: NATS_URL
-    });
+    console.info(`[TOKENIZATION-SERVICE] connected to ${natsConnection.getServer()}`);
 
-    natsClient.on("connect", () => {
-        console.log("[NATS] Connected");
-    });
-
-    natsClient.on("disconnected", () => {
-        console.log("[NATS] Disconnected");
-    });
-
-    natsClient.on("reconnecting", () => {
-        console.log("[NATS] client reconnecting");
-    });
-
-    natsClient.on("reconnect", () => {
-        console.log("[NATS] client reconnected");
-    });
-
-    natsClient.on("error", (err) => {
-        console.error("[NATS] Err", err);
-    });
+    (async () => {
+        for await (const status of natsConnection.status()) {
+            console.info(`${status.type}: ${JSON.stringify(status.data)}`);
+        }
+    })().then();
 }
 
-export async function registerHandlers(
-    handlers: NatsHandler[]
-): Promise<Subscription[]> {
-    return await Promise.all(
-        handlers.map(([topic, handler]: NatsHandler) =>
-            natsClient.subscribe(topic, handleErrors(handler) as MsgCallback)
-        )
-    );
-}
+export function registerHandlers(handlers: NatsHandler[]): void {
+    handlers.forEach(([subject, handler]: NatsHandler) => {
+        const sub = natsConnection.subscribe(subject);
 
-export function natsUnsubscribe(natsSubscriptions: Subscription[]): void {
-    natsSubscriptions.forEach((sub: Subscription) => sub.unsubscribe());
-}
-
-export function close(): void {
-    console.log(`Closing connection to NATS server ${NATS_URL}`);
-    natsClient.close();
-}
-
-export function getClient(): Client {
-    return natsClient;
-}
-
-function handleErrors(handler: MsgCallback) {
-    return async function wrappedHandler(
-        wrappedNatsError: NatsError,
-        wrappedMsg: Msg
-    ): Promise<void> {
         try {
-            await handler(wrappedNatsError, wrappedMsg);
+            handler(sub);
         } catch (err) {
             console.error(err);
         }
-    };
+    });
 }
+
+export function drain(): Promise<void> {
+    console.log(`Draining connection to NATS server ${NATS_URL}`);
+    return natsConnection.drain();
+}
+
+export function getConnection(): NatsConnection {
+    return natsConnection;
+}
+
+export const jsonCodec = JSONCodec();
