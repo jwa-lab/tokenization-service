@@ -14,6 +14,8 @@ export const warehouseHandlers: NatsHandler[] = [
     [
         "add_item",
         async (err: NatsError | null, msg: Msg): Promise<void> => {
+            const client = getClient();
+
             const warehouseContract = await getContract<WarehouseContract>(
                 WAREHOUSE_CONTRACT_ADDRESS
             );
@@ -25,11 +27,17 @@ export const warehouseHandlers: NatsHandler[] = [
             const operation = await add_item(warehouseContract, collectible);
 
             await operation.confirmation(1, 1);
+
+            if (msg.reply) {
+                client.publish(msg.reply, String(collectible.item_id));
+            }
         }
     ],
     [
         "update_item",
         async (err: NatsError | null, msg: Msg): Promise<void> => {
+            const client = getClient();
+
             const warehouseContract = await getContract<WarehouseContract>(
                 WAREHOUSE_CONTRACT_ADDRESS
             );
@@ -41,12 +49,18 @@ export const warehouseHandlers: NatsHandler[] = [
             const operation = await update_item(warehouseContract, collectible);
 
             await operation.confirmation(1, 1);
+
+            if (msg.reply) {
+                client.publish(msg.reply, String(collectible.item_id));
+            }
         }
     ],
 
     [
         "freeze_item",
         async (err: NatsError | null, msg: Msg): Promise<void> => {
+            const client = getClient();
+
             const warehouseContract = await getContract<WarehouseContract>(
                 WAREHOUSE_CONTRACT_ADDRESS
             );
@@ -58,6 +72,10 @@ export const warehouseHandlers: NatsHandler[] = [
             const operation = await freeze_item(warehouseContract, item_id);
 
             await operation.confirmation(1, 1);
+
+            if (msg.reply) {
+                client.publish(msg.reply, String(item_id));
+            }
         }
     ],
 
@@ -65,6 +83,7 @@ export const warehouseHandlers: NatsHandler[] = [
         "get_item",
         async (err: NatsError | null, msg: Msg): Promise<void> => {
             const client = getClient();
+
             const warehouseContract = await getContract<WarehouseContract>(
                 WAREHOUSE_CONTRACT_ADDRESS
             );
