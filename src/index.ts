@@ -1,36 +1,21 @@
 console.log(`[TOKENIZATION-SERVICE] Starting Tokenization Service...`);
 
-import {
-    init as initNats,
-    registerHandlers,
-    natsUnsubscribe,
-    close as closeNats
-} from "./nats";
+import { init as initNats, registerHandlers, drain } from "./nats";
 import { init as initTezos } from "./tezos";
-import { init as initES, close as closeES } from "./elasticsearch";
 
 import { warehouseHandlers } from "./handlers/warehouse";
 
 async function start() {
-    let cleanUp: () => void;
-
     function shutdown(exitCode: number) {
-        cleanUp();
-        closeNats();
-        closeES();
+        drain();
         process.exit(exitCode);
     }
 
     try {
         await initNats();
         await initTezos();
-        await initES();
 
-        const natsSubscriptions = await registerHandlers(warehouseHandlers);
-
-        cleanUp = () => {
-            natsUnsubscribe(natsSubscriptions);
-        };
+        registerHandlers(warehouseHandlers);
 
         process.on("SIGINT", () => {
             console.log("[TOKENIZATION-SERVICE] Gracefully shutting down...");

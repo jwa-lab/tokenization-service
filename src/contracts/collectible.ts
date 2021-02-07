@@ -22,6 +22,7 @@ export interface JSONCollectible {
     item_id: number;
     data: { [k: string]: string };
     quantity: number;
+    [key: string]: unknown;
 }
 
 type LinearCollectible = [
