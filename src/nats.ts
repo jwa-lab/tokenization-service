@@ -3,7 +3,7 @@ import { NATS_URL } from "./config";
 
 export type NatsHandler = [
     topic: string,
-    handler: (subscription: Subscription) => void
+    handler: (subscription: Subscription) => Promise<void>
 ];
 
 let natsConnection: NatsConnection;
@@ -18,7 +18,9 @@ export async function init(): Promise<void> {
         return;
     }
 
-    console.info(`[TOKENIZATION-SERVICE] connected to ${natsConnection.getServer()}`);
+    console.info(
+        `[TOKENIZATION-SERVICE] connected to ${natsConnection.getServer()}`
+    );
 
     (async () => {
         for await (const status of natsConnection.status()) {
@@ -27,20 +29,18 @@ export async function init(): Promise<void> {
     })().then();
 }
 
-export function registerHandlers(handlers: NatsHandler[]): void {
-    handlers.forEach(([subject, handler]: NatsHandler) => {
-        const sub = natsConnection.subscribe(subject);
-
-        try {
-            handler(sub);
-        } catch (err) {
-            console.error(err);
-        }
-    });
+export async function registerHandlers(handlers: NatsHandler[]): Promise<void> {
+    await Promise.all(
+        handlers.map(async ([subject, handler]: NatsHandler) => {
+            await handler(natsConnection.subscribe(subject));
+        })
+    );
 }
 
 export function drain(): Promise<void> {
-    console.log(`Draining connection to NATS server ${NATS_URL}`);
+    console.log(
+        `[TOKENIZATION-SERVICE] Draining connection to NATS server ${NATS_URL}`
+    );
     return natsConnection.drain();
 }
 
