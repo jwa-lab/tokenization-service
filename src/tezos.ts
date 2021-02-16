@@ -10,7 +10,7 @@ import { TEZOS_RPC_URI, WAREHOUSE_TEZOS_SECRET_KEY } from "./config";
 let tezosClient: TezosToolkit;
 
 export async function init(): Promise<void> {
-    console.log(`[TEZOS] Using Tezos RPC URI ${TEZOS_RPC_URI}`);
+    console.log(`[TOKENIZATION-SERVICE] Using Tezos RPC URI ${TEZOS_RPC_URI}`);
 
     tezosClient = new TezosToolkit();
     tezosClient.setProvider({
@@ -29,5 +29,11 @@ export async function init(): Promise<void> {
 export async function getContract<
     T extends ContractAbstraction<ContractProvider>
 >(address: string): Promise<T> {
-    return (await tezosClient.contract.at(address)) as T;
+    try {
+        return (await tezosClient.contract.at(address)) as T;
+    } catch (err) {
+        throw new Error(
+            `[TOKENIZATION-SERVICE] No contract at address ${address}`
+        );
+    }
 }

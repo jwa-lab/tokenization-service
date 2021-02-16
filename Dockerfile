@@ -1,7 +1,5 @@
 FROM node:12-alpine
 
-USER node
-
 WORKDIR /app
 
 COPY src ./src
@@ -12,5 +10,7 @@ COPY tsconfig.json .
 
 RUN npm install
 RUN npm run build
+
+USER node
 
 ENTRYPOINT ["npm", "run", "start"]

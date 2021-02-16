@@ -6,8 +6,8 @@ import { init as initTezos } from "./tezos";
 import { warehouseHandlers } from "./handlers/warehouse";
 
 async function start() {
-    function shutdown(exitCode: number) {
-        drain();
+    async function shutdown(exitCode: number) {
+        await drain();
         process.exit(exitCode);
     }
 
@@ -15,12 +15,13 @@ async function start() {
         await initNats();
         await initTezos();
 
-        registerHandlers(warehouseHandlers);
+        await registerHandlers(warehouseHandlers);
 
         process.on("SIGINT", () => {
             console.log("[TOKENIZATION-SERVICE] Gracefully shutting down...");
             shutdown(0);
         });
+
         process.on("SIGTERM", () => {
             console.log("[TOKENIZATION-SERVICE] Gracefully shutting down...");
             shutdown(0);
