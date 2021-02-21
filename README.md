@@ -4,21 +4,24 @@ Service for CRUD operations on NFTs using a user-friendly interface
 
 ## What is it?
 
-Provides an easy to use API (REST-like or message-based) that triggers calls to a dApp.
-The current implementation is a Node.js server using `@taquito` to translate `NATS.io` messages into calls to the [Tezos Smart Contract]
-Reads are often performed on a Tezos indexer instead of running a Smart Contract function.
+The current implementation is a Node.js server using `@taquito` to translate `NATS.io` messages into calls to the [Tokenization Service Contracts]
+Reads and Writes directly to and from the blockchain. For faster CRUD operations on items you may want to use the [Item Store], which is backed by an Elastic Search database and offers fast and free operations. Durable storage in the blockchain could be delayed based on business rules.
 
-[tezos smart contract]: git@github.com:jwa-lab/tokenization-service-contracts.git
+[tokenization service contracts]: git@github.com:jwa-lab/tokenization-service-contracts.git
+[item store]: https://github.com/jwa-lab/item-store
 
 ## How to setup Dev environment:
 
 1. Start a minilab locally: https://github.com/jwa-lab/minilab
-2. Install this service's contract: https://github.com/jwa-lab/tokenization-service-contracts
-3. Then build this service
+2. Start the service in dev mode which will automatically deploy a new Smart Contract for you upon startp. This should only be used in development mode and not in production!
 
 ```
-./run build
+./run dev
 ```
+
+To use an existing Smart Contract instead:
+
+3. Deploy this service's contract: https://github.com/jwa-lab/tokenization-service-contracts
 
 To run the service, you need to locate the newly deployed contract's KT1 address:
 
@@ -51,21 +54,15 @@ To run the service, you need to locate the newly deployed contract's KT1 address
    > Total cost:            1.660571 XTZ
 ```
 
-And edit the `./run` script, set `WAREHOUSE_CONTRACT_ADDRESS=KT1RedbZ6vuAgTqBeJMiHGcvhkMLCUBKVGN9`
+On your machine, set the `WAREHOUSE_CONTRACT_ADDRESS` environment variable:
 
 ```
-./run start
+export WAREHOUSE_CONTRACT_ADDRESS=KT1RedbZ6vuAgTqBeJMiHGcvhkMLCUBKVGN9
 ```
-
-### Develop
-
-To run this service in `develop` mode, simply run
 
 ```
 ./run dev
 ```
-
-This will run a `nodemon` checking when files change and automatically restarting the recompiled Typescript sources.
 
 ### Test
 
@@ -74,7 +71,7 @@ To test this service, follow the steps listed in `How to setup Dev environment`
 Then:
 
 ```
-node tests/test.js
+npm run test
 ```
 
-It should create a new item and output it back after creation.
+It will run our beautiful JEST test suite.

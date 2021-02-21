@@ -1,12 +1,12 @@
 import { Subscription } from "nats";
 import { NatsHandler, jsonCodec } from "../nats";
-import { getContract } from "../tezos";
-import { WAREHOUSE_CONTRACT_ADDRESS } from "../config";
+import { WarehouseStorage } from "../contracts/warehouse.types";
 import {
-    WarehouseContract,
-    WarehouseStorage
-} from "../contracts/warehouse.types";
-import { add_item, update_item, freeze_item } from "../contracts/warehouse";
+    add_item,
+    update_item,
+    freeze_item,
+    warehouseContract
+} from "../contracts/warehouse";
 import {
     Collectible,
     MichelsonCollectible,
@@ -17,10 +17,6 @@ export const warehouseHandlers: NatsHandler[] = [
     [
         "add_item",
         async (subscription: Subscription): Promise<void> => {
-            const warehouseContract = await getContract<WarehouseContract>(
-                WAREHOUSE_CONTRACT_ADDRESS
-            );
-
             for await (const message of subscription) {
                 const collectible = new Collectible(
                     jsonCodec.decode(message.data) as JSONCollectible
@@ -31,7 +27,7 @@ export const warehouseHandlers: NatsHandler[] = [
                 let operation;
 
                 try {
-                    operation = await add_item(warehouseContract, collectible);
+                    operation = await add_item(collectible);
                     await operation.confirmation(1, 1);
 
                     message.respond(
@@ -53,10 +49,6 @@ export const warehouseHandlers: NatsHandler[] = [
     [
         "update_item",
         async (subscription: Subscription): Promise<void> => {
-            const warehouseContract = await getContract<WarehouseContract>(
-                WAREHOUSE_CONTRACT_ADDRESS
-            );
-
             for await (const message of subscription) {
                 const collectible = new Collectible(
                     jsonCodec.decode(message.data) as JSONCollectible
@@ -67,10 +59,7 @@ export const warehouseHandlers: NatsHandler[] = [
                 let operation;
 
                 try {
-                    operation = await update_item(
-                        warehouseContract,
-                        collectible
-                    );
+                    operation = await update_item(collectible);
 
                     await operation.confirmation(1, 1);
 
@@ -94,10 +83,6 @@ export const warehouseHandlers: NatsHandler[] = [
     [
         "freeze_item",
         async (subscription: Subscription): Promise<void> => {
-            const warehouseContract = await getContract<WarehouseContract>(
-                WAREHOUSE_CONTRACT_ADDRESS
-            );
-
             for await (const message of subscription) {
                 const { item_id } = jsonCodec.decode(
                     message.data
@@ -108,10 +93,7 @@ export const warehouseHandlers: NatsHandler[] = [
                 let operation;
 
                 try {
-                    operation = await freeze_item(
-                        warehouseContract,
-                        Number(item_id)
-                    );
+                    operation = await freeze_item(Number(item_id));
                     await operation.confirmation(1, 1);
 
                     message.respond(
@@ -134,10 +116,6 @@ export const warehouseHandlers: NatsHandler[] = [
     [
         "get_item",
         async (subscription: Subscription): Promise<void> => {
-            const warehouseContract = await getContract<WarehouseContract>(
-                WAREHOUSE_CONTRACT_ADDRESS
-            );
-
             for await (const message of subscription) {
                 const storage = await warehouseContract.storage<
                     WarehouseStorage

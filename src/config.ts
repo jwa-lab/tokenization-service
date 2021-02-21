@@ -4,6 +4,7 @@ const {
     NATS_URL = "",
     TEZOS_RPC_URI = "",
     WAREHOUSE_TEZOS_SECRET_KEY = "",
+    WAREHOUSE_TEZOS_PUBLIC_KEY_HASH = "",
     WAREHOUSE_CONTRACT_ADDRESS = ""
 } = process.env;
 
@@ -25,9 +26,18 @@ if (!WAREHOUSE_TEZOS_SECRET_KEY) {
     );
 }
 
-if (!validateAddress(WAREHOUSE_CONTRACT_ADDRESS)) {
+if (!WAREHOUSE_TEZOS_PUBLIC_KEY_HASH) {
     throw new Error(
-        "Please provide a valid KT1 address to access the WAREHOUSE via WAREHOUSE_CONTRACT_ADDRESS"
+        "Please provide a public key hash for the contract owner via WAREHOUSE_TEZOS_PUBLIC_KEY_HASH."
+    );
+}
+
+if (
+    WAREHOUSE_CONTRACT_ADDRESS &&
+    !validateAddress(WAREHOUSE_CONTRACT_ADDRESS)
+) {
+    throw new Error(
+        "Please provide a valid KT1 address to access the WAREHOUSE via WAREHOUSE_CONTRACT_ADDRESS or leave blank for the contract to be automatically deployed"
     );
 }
 
@@ -35,5 +45,6 @@ export {
     NATS_URL,
     WAREHOUSE_CONTRACT_ADDRESS,
     WAREHOUSE_TEZOS_SECRET_KEY,
+    WAREHOUSE_TEZOS_PUBLIC_KEY_HASH,
     TEZOS_RPC_URI
 };
