@@ -4,6 +4,7 @@ import { init as initNats, registerHandlers, drain } from "./nats";
 import { init as initTezos } from "./tezos";
 
 import { warehouseHandlers } from "./handlers/warehouse";
+import { initWarehouseContract } from "./contracts/warehouse";
 
 async function start() {
     async function shutdown(exitCode: number) {
@@ -14,6 +15,7 @@ async function start() {
     try {
         await initNats();
         await initTezos();
+        await initWarehouseContract();
 
         await registerHandlers(warehouseHandlers);
 
