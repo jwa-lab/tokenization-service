@@ -63,9 +63,7 @@ export async function deployContract<
     const contract = await originationOperation.contract(1, 1);
 
     console.log(
-        `[TOKENIZATION-SERVICE] ${contractName} contract deployed at ${
-            contract.address
-        }`
+        `[TOKENIZATION-SERVICE] ${contractName} contract deployed at ${contract.address}`
     );
 
     return contract as T;

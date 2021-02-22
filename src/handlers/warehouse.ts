@@ -15,7 +15,7 @@ import {
 
 export const warehouseHandlers: NatsHandler[] = [
     [
-        "add_item",
+        "tokenization-service_add_item",
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
                 const collectible = new Collectible(
@@ -47,7 +47,7 @@ export const warehouseHandlers: NatsHandler[] = [
         }
     ],
     [
-        "update_item",
+        "tokenization-service_update_item",
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
                 const collectible = new Collectible(
@@ -81,7 +81,7 @@ export const warehouseHandlers: NatsHandler[] = [
     ],
 
     [
-        "freeze_item",
+        "tokenization-service_freeze_item",
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
                 const { item_id } = jsonCodec.decode(
@@ -114,7 +114,7 @@ export const warehouseHandlers: NatsHandler[] = [
     ],
 
     [
-        "get_item",
+        "tokenization-service_get_item",
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
                 const storage = await warehouseContract.storage<
