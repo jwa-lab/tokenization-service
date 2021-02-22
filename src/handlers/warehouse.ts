@@ -12,6 +12,9 @@ import {
     MichelsonCollectible,
     JSONCollectible
 } from "../contracts/collectible";
+import { Client } from "@elastic/elasticsearch";
+import { ELASTICSEARCH_URI } from "./config";
+
 
 export const warehouseHandlers: NatsHandler[] = [
     [
@@ -138,5 +141,57 @@ export const warehouseHandlers: NatsHandler[] = [
                 }
             }
         }
-    ]
+    ],
+    [
+        "tokenisation-service_search_id_from_elasticsearch",
+        async (subscription: Subscription): Promise<void> => {
+
+            //I must initate the client here because there is no elasticsearch.ts file elsewhere
+            let client: Client;
+
+            async function initElasticSearch(): Promise<void> {
+            client = new Client({ node: ELASTICSEARCH_URI });
+            
+            console.log(
+                `[ITEM-STORE] Connected to ElasticSearch on ${ELASTICSEARCH_URI}`
+            );
+        }
+            
+ 
+          for await (const message of subscription) {
+              const data = jsonCodec.decode(message.data) as JSONItem;
+  
+            try {
+                const { body } = await client.search({
+                    index: ELASTICSEARCH_INDEX_NAME,
+                    body: {
+                        item_id : data.item_id
+                        doc: data
+                    }
+                });
+    
+                    message.respond(
+                        jsonCodec.encode({
+                            data
+                        })
+                    );
+                    console.log(
+                        `[ITEM-STORE] Item found in ${ELASTICSEARCH_INDEX_NAME}`,
+                        data
+                    );
+                } catch (err) {
+                    console.error(
+                        `[ITEM-STORE] Error searching id from ${ELASTICSEARCH_INDEX_NAME}`,
+                        err
+                    );
+    
+                    message.respond(
+                        jsonCodec.encode({
+                            error: err
+                        })
+                    );
+                }
+            }
+        }  
+      ]
 ];
