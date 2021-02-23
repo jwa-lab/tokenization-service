@@ -18,6 +18,7 @@ export interface WarehouseContract extends Contract {
         add_item(
             data: MichelsonMap<string, string>,
             item_id: number,
+            name: string,
             no_update_after: string | undefined,
             quantity: number
         ): ContractMethod<ContractProvider>;
@@ -25,6 +26,7 @@ export interface WarehouseContract extends Contract {
         update_item(
             data: MichelsonMap<string, string>,
             item_id: number,
+            name: string,
             no_update_after: string | undefined,
             quantity: number
         ): ContractMethod<ContractProvider>;
