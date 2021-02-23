@@ -20,6 +20,7 @@ describe("Given Tokenization Service is connected to NATS", () => {
                         XP: "97"
                     },
                     item_id: 10,
+                    name: "Christiano Ronaldo",
                     quantity: 0
                 }),
                 { max: 1, timeout: 10000 }
@@ -40,6 +41,7 @@ describe("Given Tokenization Service is connected to NATS", () => {
                             XP: "97"
                         },
                         item_id: 10,
+                        name: "Christiano Ronaldo",
                         quantity: 0
                     }),
                     { max: 1, timeout: 10000 }
@@ -70,6 +72,7 @@ describe("Given Tokenization Service is connected to NATS", () => {
                         XP: "97"
                     },
                     item_id: 10,
+                    name: "Christiano Ronaldo",
                     quantity: 0
                 });
             });
