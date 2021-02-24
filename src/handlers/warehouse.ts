@@ -1,5 +1,5 @@
 import { Subscription } from "nats";
-import { NatsHandler, jsonCodec } from "../nats";
+import { NatsHandler, jsonCodec, getConnection } from "../nats";
 import { WarehouseStorage } from "../contracts/warehouse.types";
 import {
     add_item,
@@ -12,6 +12,7 @@ import {
     MichelsonCollectible,
     JSONCollectible
 } from "../contracts/collectible";
+
 
 export const warehouseHandlers: NatsHandler[] = [
     [
@@ -126,7 +127,7 @@ export const warehouseHandlers: NatsHandler[] = [
 
                 try {
                     const collectible = (await storage.warehouse.get(
-                        String(item_id)
+                    String(item_id)   
                     )) as MichelsonCollectible;
                     const jsonCollectible = Collectible.fromMichelson(
                         collectible
@@ -138,5 +139,28 @@ export const warehouseHandlers: NatsHandler[] = [
                 }
             }
         }
+    ],
+
+    [
+        "tokenization-service_retrieve_item_id",
+        async (subscription: Subscription): Promise<void> => {
+            for await (const message of subscription) {
+                const storage = await warehouseContract.storage<
+                    WarehouseStorage
+                >();
+                const { item_store } = jsonCodec.decode(
+                    message.data
+                ) as JSONCollectible;
+
+                try{
+                    await natsConnection.request(
+                        item_store.item_id
+                    )) as MichelsonCollectible;
+                    
+                    message.respond(jsonCodec.encode(jsonCollectible);
+                }
+            } catch (err) {
+                console.error(err);
+            }
     ]
 ];
