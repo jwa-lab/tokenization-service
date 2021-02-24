@@ -1,5 +1,5 @@
 import { Subscription } from "nats";
-import { NatsHandler, jsonCodec } from "../nats";
+import { NatsHandler, jsonCodec, getConnection } from "../nats";
 import { WarehouseStorage } from "../contracts/warehouse.types";
 import {
     add_item,
@@ -12,6 +12,7 @@ import {
     MichelsonCollectible,
     JSONCollectible
 } from "../contracts/collectible";
+
 
 export const warehouseHandlers: NatsHandler[] = [
     [
@@ -126,7 +127,7 @@ export const warehouseHandlers: NatsHandler[] = [
 
                 try {
                     const collectible = (await storage.warehouse.get(
-                        String(item_id)
+                    String(item_id)   
                     )) as MichelsonCollectible;
                     const jsonCollectible = Collectible.fromMichelson(
                         collectible
@@ -138,5 +139,65 @@ export const warehouseHandlers: NatsHandler[] = [
                 }
             }
         }
+    ],
+
+    [
+<<<<<<< HEAD
+        "tokenization-service_tokenize_existing_item",
+        async (subscription: Subscription): Promise<void> => {
+            for await (const message of subscription) {
+                const natsConnection = getConnection()
+                const { item_id } = jsonCodec.decode(
+                    message.data
+                ) as JSONCollectible;
+
+                try {
+                    const itemResponse = await natsConnection.request(
+                        "item-store_get_item",
+                        jsonCodec.encode({
+                            item_id
+                        })
+                    );
+                    
+
+                  const addItemResponse = await natsConnection.request(
+                      "tokenization-service_add_item",
+                      itemResponse.data
+                  );
+            
+                  message.respond(jsonCodec.encode({item : jsonCodec.decode(addItemResponse.data)}))
+
+                } catch (err) {
+                    console.error(err);
+                    message.respond(
+                        jsonCodec.encode({
+                            error: err
+                        })
+                    );
+                }
+            }
+        }
+=======
+        "tokenization-service_retrieve_item_id",
+        async (subscription: Subscription): Promise<void> => {
+            for await (const message of subscription) {
+                const storage = await warehouseContract.storage<
+                    WarehouseStorage
+                >();
+                const { item_store } = jsonCodec.decode(
+                    message.data
+                ) as JSONCollectible;
+
+                try{
+                    await natsConnection.request(
+                        item_store.item_id
+                    )) as MichelsonCollectible;
+                    
+                    message.respond(jsonCodec.encode(jsonCollectible);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+>>>>>>> feb43a3... FP1-0003 WIP Retrieve item_id from item_store
     ]
 ];
