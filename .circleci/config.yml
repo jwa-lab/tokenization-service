@@ -15,6 +15,7 @@ jobs:
             - checkout
             - run: npm install
             - run: npx minilab start
+            - run: ./run dev &
             # wait 20s for the contract to be deployed
             - run: sleep 20
             - run: npm run test
