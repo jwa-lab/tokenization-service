@@ -1,5 +1,5 @@
 import { Subscription } from "nats";
-import { NatsHandler, jsonCodec, getConnection } from "../nats";
+import { NatsHandler, jsonCodec } from "../nats";
 import { WarehouseStorage } from "../contracts/warehouse.types";
 import {
     add_item,
@@ -127,7 +127,7 @@ export const warehouseHandlers: NatsHandler[] = [
 
                 try {
                     const collectible = (await storage.warehouse.get(
-                    String(item_id)   
+                        String(item_id)   
                     )) as MichelsonCollectible;
                     const jsonCollectible = Collectible.fromMichelson(
                         collectible
