@@ -142,25 +142,27 @@ export const warehouseHandlers: NatsHandler[] = [
     ],
 
     [
-        "tokenization-service_retrieve_item_id",
+        "tokenization-service_get_item_from_item-store",
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
-                const storage = await warehouseContract.storage<
-                    WarehouseStorage
-                >();
-                const { item_store } = jsonCodec.decode(
+                const natsConnection = require("nats");
+                const { item_id } = jsonCodec.decode(
                     message.data
                 ) as JSONCollectible;
 
-                try{
-                    await natsConnection.request(
-                        item_store.item_id
+                try {
+                    const collectible = (await natsConnection.request(
+                    String(item_id)   
                     )) as MichelsonCollectible;
-                    
-                    message.respond(jsonCodec.encode(jsonCollectible);
+                    const jsonCollectible = Collectible.fromMichelson(
+                        collectible
+                    );
+
+                    message.respond(jsonCodec.encode(jsonCollectible.data));
+                } catch (err) {
+                    console.error(err);
                 }
-            } catch (err) {
-                console.error(err);
             }
+        }
     ]
 ];
