@@ -14,17 +14,6 @@ describe("Given Tokenization Service is connected to NATS", () => {
         beforeAll(async () => {
             jest.setTimeout(10000);
             response = await natsConnection.request(
-                "tokenization-service_get_item_from_item_store",
-                jsonCodec.encode({
-                    item_id: 10
-                }),
-            );
-        });
-
-
-        beforeAll(async () => {
-            jest.setTimeout(10000);
-            response = await natsConnection.request(
                 "tokenization-service_add_item",
                 jsonCodec.encode({
                     data: {
