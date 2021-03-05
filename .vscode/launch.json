@@ -1,0 +1,23 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Launch Program",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/dist/index.js",
+            "env": {
+                "NATS_URL": "nats://localhost:4222",
+                "TEZOS_RPC_URI": "http://localhost:20000",
+                "WAREHOUSE_TEZOS_SECRET_KEY": "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq",
+                "WAREHOUSE_TEZOS_PUBLIC_KEY_HASH": "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"
+            },
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+        }
+    ]
+}

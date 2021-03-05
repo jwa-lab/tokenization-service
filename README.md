@@ -13,7 +13,8 @@ Reads and Writes directly to and from the blockchain. For faster CRUD operations
 ## How to setup Dev environment:
 
 1. Start a minilab locally: https://github.com/jwa-lab/minilab
-2. Start the service in dev mode which will automatically deploy a new Smart Contract for you upon startp. This should only be used in development mode and not in production!
+2. Start the supporting services (item-store, elasticsearch) by running `docker-compose up` in this folder
+3. Start the service in dev mode which will automatically deploy a new Smart Contract for you upon startp. This should only be used in development mode and not in production!
 
 ```
 ./run dev
@@ -21,7 +22,7 @@ Reads and Writes directly to and from the blockchain. For faster CRUD operations
 
 To use an existing Smart Contract instead:
 
-3. Deploy this service's contract: https://github.com/jwa-lab/tokenization-service-contracts
+4. Deploy this service's contract: https://github.com/jwa-lab/tokenization-service-contracts
 
 To run the service, you need to locate the newly deployed contract's KT1 address:
 

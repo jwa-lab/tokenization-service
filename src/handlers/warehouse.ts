@@ -1,5 +1,5 @@
 import { Subscription } from "nats";
-import { NatsHandler, jsonCodec } from "../nats";
+import { NatsHandler, jsonCodec, getConnection } from "../nats";
 import { WarehouseStorage } from "../contracts/warehouse.types";
 import {
     add_item,
@@ -30,11 +30,7 @@ export const warehouseHandlers: NatsHandler[] = [
                     operation = await add_item(collectible);
                     await operation.confirmation(1, 1);
 
-                    message.respond(
-                        jsonCodec.encode({
-                            item_id: collectible.item_id
-                        })
-                    );
+                    message.respond(jsonCodec.encode(collectible));
                 } catch (err) {
                     console.error(err);
                     message.respond(
@@ -135,6 +131,46 @@ export const warehouseHandlers: NatsHandler[] = [
                     message.respond(jsonCodec.encode(jsonCollectible));
                 } catch (err) {
                     console.error(err);
+                }
+            }
+        }
+    ],
+
+    [
+        "tokenization-service_tokenize_existing_item",
+        async (subscription: Subscription): Promise<void> => {
+            for await (const message of subscription) {
+                const natsConnection = getConnection();
+                const { item_id } = jsonCodec.decode(
+                    message.data
+                ) as JSONCollectible;
+
+                try {
+                    const response = await natsConnection.request(
+                        "item-store_get_item",
+                        jsonCodec.encode({
+                            item_id
+                        })
+                    );
+
+                    const wrappedItem = jsonCodec.decode(response.data) as {
+                        item: JSONCollectible;
+                    };
+
+                    const addItemResponse = await natsConnection.request(
+                        "tokenization-service_add_item",
+                        jsonCodec.encode(wrappedItem.item),
+                        { timeout: 10000 }
+                    );
+
+                    message.respond(addItemResponse.data);
+                } catch (err) {
+                    console.error(err);
+                    message.respond(
+                        jsonCodec.encode({
+                            error: err
+                        })
+                    );
                 }
             }
         }
