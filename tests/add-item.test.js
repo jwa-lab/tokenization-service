@@ -27,8 +27,15 @@ describe("Given Tokenization Service is connected to NATS", () => {
             );
         });
 
-        it("Then returns the new item id", () => {
-            expect(jsonCodec.decode(response.data).item_id).toBe(10);
+        it("Then returns the new item", () => {
+            expect(jsonCodec.decode(response.data)).toEqual({
+                data: {
+                    XP: "97"
+                },
+                item_id: 10,
+                name: "Christiano Ronaldo",
+                quantity: 0
+            });
         });
 
         describe("When I add an item with the same id", () => {
