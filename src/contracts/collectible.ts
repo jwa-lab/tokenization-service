@@ -10,6 +10,7 @@ export interface MichelsonCollectible {
     [key: string]:
         | MichelsonMap<string, string>
         | string
+        | string
         | BigNumber
         | undefined;
 }
