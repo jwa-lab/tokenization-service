@@ -16,6 +16,7 @@ export interface WarehouseContract extends Contract {
     storage: <WarehouseStorage>() => Promise<WarehouseStorage>;
     methods: {
         add_item(
+            available_quantity: number,
             data: MichelsonMap<string, string>,
             item_id: number,
             name: string,
@@ -24,6 +25,7 @@ export interface WarehouseContract extends Contract {
         ): ContractMethod<ContractProvider>;
 
         update_item(
+            available_quantity: number,
             data: MichelsonMap<string, string>,
             item_id: number,
             name: string,

@@ -2,12 +2,14 @@ import { MichelsonMap } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 
 export interface MichelsonCollectible {
+    available_quantity: BigNumber;
     data: MichelsonMap<string, string>;
     item_id: BigNumber;
     name: string;
     no_update_after: string | undefined;
     quantity: BigNumber;
     [key: string]:
+        | BigNumber
         | MichelsonMap<string, string>
         | string
         | string
@@ -25,6 +27,7 @@ export interface JSONCollectible {
     name: string;
     data: { [k: string]: string };
     quantity: number;
+    available_quantity: number;
     [key: string]: unknown;
 }
 
@@ -33,10 +36,12 @@ type LinearCollectible = [
     number,
     string,
     string | undefined,
+    number,
     number
 ];
 
 export class Collectible {
+    readonly available_quantity: BigNumber;
     readonly data: CollectibleData;
     readonly item_id: BigNumber;
     readonly name: string;
@@ -44,6 +49,7 @@ export class Collectible {
     readonly quantity: BigNumber;
 
     constructor(object: { [k: string]: unknown }) {
+        this.available_quantity = getKey(object, "available_quantity") as BigNumber;
         this.data = getKey(object, "data") as CollectibleData;
         this.item_id = getKey(object, "item_id") as BigNumber;
         this.name = object.name as string;
@@ -55,6 +61,7 @@ export class Collectible {
 
     toMichelsonArguments(): LinearCollectible {
         const collectible = {
+            available_quantity: this.available_quantity,
             data: MichelsonMap.fromLiteral(this.data),
             item_id: this.item_id,
             name: this.name,
@@ -75,6 +82,7 @@ export class Collectible {
             name: michelson.name.toString(),
             item_id: michelson.item_id.toNumber(),
             quantity: michelson.quantity.toNumber(),
+            available_quantity: michelson.quantity.toNumber(),
             data: Object.fromEntries(michelson.data.entries())
         };
     }

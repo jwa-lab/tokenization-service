@@ -21,7 +21,8 @@ describe("Given Tokenization Service is connected to NATS", () => {
                     },
                     item_id: 10,
                     name: "Christiano Ronaldo",
-                    quantity: 0
+                    quantity: 0,
+                    available_quantity: 10
                 }),
                 { max: 1, timeout: 10000 }
             );
@@ -34,7 +35,8 @@ describe("Given Tokenization Service is connected to NATS", () => {
                 },
                 item_id: 10,
                 name: "Christiano Ronaldo",
-                quantity: 0
+                quantity: 0,
+                available_quantity: 10
             });
         });
 
@@ -49,7 +51,8 @@ describe("Given Tokenization Service is connected to NATS", () => {
                         },
                         item_id: 10,
                         name: "Christiano Ronaldo",
-                        quantity: 0
+                        quantity: 0,
+                        available_quantity: 10
                     }),
                     { max: 1, timeout: 10000 }
                 );
@@ -80,7 +83,8 @@ describe("Given Tokenization Service is connected to NATS", () => {
                     },
                     item_id: 10,
                     name: "Christiano Ronaldo",
-                    quantity: 0
+                    quantity: 10,
+                    available_quantity: 10
                 });
             });
         });
