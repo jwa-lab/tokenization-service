@@ -1,10 +1,13 @@
 console.log(`[TOKENIZATION-SERVICE] Starting Tokenization Service...`);
 
-import { init as initNats, registerHandlers, drain } from "./nats";
-import { init as initTezos } from "./tezos";
+import { SERVICE_NAME } from "./config";
+import { init as initNats, registerHandlers, drain } from "./services/nats";
+import { init as initTezos } from "./services/tezos";
 
-import { warehouseHandlers } from "./handlers/warehouse";
-import { initWarehouseContract } from "./contracts/warehouse";
+import { warehouseHandlers } from "./private/warehouse";
+import { inventoryHandlers } from "./private/inventory";
+import { tokenizeHandlers } from "./public/tokenize";
+import { initWarehouseContract } from "./services/warehouse";
 
 async function start() {
     async function shutdown(exitCode: number) {
@@ -17,7 +20,9 @@ async function start() {
         await initTezos();
         await initWarehouseContract();
 
-        await registerHandlers(warehouseHandlers);
+        registerHandlers(SERVICE_NAME, warehouseHandlers);
+        registerHandlers(SERVICE_NAME, tokenizeHandlers);
+        registerHandlers(SERVICE_NAME, inventoryHandlers);
 
         process.on("SIGINT", () => {
             console.log("[TOKENIZATION-SERVICE] Gracefully shutting down...");

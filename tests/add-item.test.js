@@ -10,18 +10,20 @@ describe("Given Tokenization Service is connected to NATS", () => {
 
     describe("When I add a new item", () => {
         let response;
+        let itemId = 24;
 
         beforeAll(async () => {
             jest.setTimeout(10000);
             response = await natsConnection.request(
-                "tokenization-service_add_item",
+                "tokenization-service.add_warehouse_item",
                 jsonCodec.encode({
                     data: {
                         XP: "97"
                     },
-                    item_id: 10,
+                    item_id: itemId,
                     name: "Christiano Ronaldo",
-                    quantity: 0
+                    total_quantity: 1000,
+                    available_quantity: 1000
                 }),
                 { max: 1, timeout: 10000 }
             );
@@ -32,9 +34,10 @@ describe("Given Tokenization Service is connected to NATS", () => {
                 data: {
                     XP: "97"
                 },
-                item_id: 10,
+                item_id: itemId,
                 name: "Christiano Ronaldo",
-                quantity: 0
+                total_quantity: 1000,
+                available_quantity: 1000
             });
         });
 
@@ -42,14 +45,15 @@ describe("Given Tokenization Service is connected to NATS", () => {
             beforeAll(async () => {
                 jest.setTimeout(10000);
                 response = await natsConnection.request(
-                    "tokenization-service_add_item",
+                    "tokenization-service.add_warehouse_item",
                     jsonCodec.encode({
                         data: {
                             XP: "97"
                         },
-                        item_id: 10,
+                        item_id: itemId,
                         name: "Christiano Ronaldo",
-                        quantity: 0
+                        total_quantity: 1000,
+                        available_quantity: 1000
                     }),
                     { max: 1, timeout: 10000 }
                 );
@@ -64,12 +68,13 @@ describe("Given Tokenization Service is connected to NATS", () => {
 
         describe("When I retrieve the item by id", () => {
             beforeAll(async () => {
+                jest.setTimeout(10000);
                 response = await natsConnection.request(
-                    "tokenization-service_get_item",
+                    "tokenization-service.get_warehouse_item",
                     jsonCodec.encode({
-                        item_id: 10
+                        item_id: itemId
                     }),
-                    { max: 1, timeout: 1000 }
+                    { max: 1, timeout: 10000 }
                 );
             });
 
@@ -78,9 +83,10 @@ describe("Given Tokenization Service is connected to NATS", () => {
                     data: {
                         XP: "97"
                     },
-                    item_id: 10,
+                    item_id: itemId,
                     name: "Christiano Ronaldo",
-                    quantity: 0
+                    total_quantity: 1000,
+                    available_quantity: 1000
                 });
             });
         });

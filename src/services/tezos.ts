@@ -1,17 +1,12 @@
 import {
     ContractAbstraction,
     ContractProvider,
-    TezosToolkit,
-    MichelsonMap
+    TezosToolkit
 } from "@taquito/taquito";
 import { importKey } from "@taquito/signer";
 import tokenizationServiceContracts from "@jwalab/tokenization-service-contracts";
 
-import {
-    TEZOS_RPC_URI,
-    WAREHOUSE_TEZOS_PUBLIC_KEY_HASH,
-    WAREHOUSE_TEZOS_SECRET_KEY
-} from "./config";
+import { TEZOS_RPC_URI, WAREHOUSE_TEZOS_SECRET_KEY } from "../config";
 
 let tezosClient: TezosToolkit;
 
@@ -45,19 +40,16 @@ export async function getContract<
 }
 
 export async function deployContract<
-    T extends ContractAbstraction<ContractProvider>
->(contractName: string): Promise<T> {
+    T extends ContractAbstraction<ContractProvider>,
+    S
+>(contractName: string, storage: S): Promise<T> {
     if (!(contractName in tokenizationServiceContracts)) {
         throw new Error(`Contract ${contractName} doesn't exist.`);
     }
 
     const originationOperation = await tezosClient.contract.originate({
         code: tokenizationServiceContracts[contractName].michelson,
-        storage: {
-            owner: WAREHOUSE_TEZOS_PUBLIC_KEY_HASH,
-            version: "1",
-            warehouse: MichelsonMap.fromLiteral({})
-        }
+        storage
     });
 
     const contract = await originationOperation.contract(1, 1);

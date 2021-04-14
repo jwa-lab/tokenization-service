@@ -1,6 +1,7 @@
 import { validateAddress } from "@taquito/utils";
 
 const {
+    SERVICE_NAME = "tokenization-service",
     NATS_URL = "",
     TEZOS_RPC_URI = "",
     WAREHOUSE_TEZOS_SECRET_KEY = "",
@@ -42,6 +43,7 @@ if (
 }
 
 export {
+    SERVICE_NAME,
     NATS_URL,
     WAREHOUSE_CONTRACT_ADDRESS,
     WAREHOUSE_TEZOS_SECRET_KEY,

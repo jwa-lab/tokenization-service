@@ -10,19 +10,22 @@ describe("Given Tokenization Service is connected to NATS", () => {
 
     describe("And there is an existing item", () => {
         let response;
+        let newItemId;
 
         beforeAll(async () => {
             response = await natsConnection.request(
-                "item-store_add_item",
+                "item-store.add_warehouse_item",
                 jsonCodec.encode({
-                    item_id: 11,
                     data: {
                         XP: "100"
                     },
                     name: "Leo Messi",
-                    quantity: 1000
+                    total_quantity: 1000,
+                    available_quantity: 1000
                 })
             );
+
+            newItemId = jsonCodec.decode(response.data).item_id;
         });
 
         describe("When I tokenize an existing item", () => {
@@ -30,9 +33,9 @@ describe("Given Tokenization Service is connected to NATS", () => {
                 jest.setTimeout(10000);
 
                 response = await natsConnection.request(
-                    "tokenization-service_tokenize_existing_item",
+                    "tokenization-service.tokenize_warehouse_item",
                     jsonCodec.encode({
-                        item_id: 11
+                        item_id: newItemId
                     }),
                     { timeout: 10000 }
                 );
@@ -40,12 +43,13 @@ describe("Given Tokenization Service is connected to NATS", () => {
 
             it("Then returns the item", () => {
                 expect(jsonCodec.decode(response.data)).toEqual({
-                    item_id: 11,
+                    item_id: newItemId,
                     data: {
                         XP: "100"
                     },
                     name: "Leo Messi",
-                    quantity: 1000
+                    total_quantity: 1000,
+                    available_quantity: 1000
                 });
             });
         });
