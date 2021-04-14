@@ -1,5 +1,5 @@
 import { connect, NatsConnection, Subscription, JSONCodec } from "nats";
-import { NATS_URL } from "./config";
+import { NATS_URL } from "../config";
 
 export type NatsHandler = [
     topic: string,
@@ -9,17 +9,12 @@ export type NatsHandler = [
 let natsConnection: NatsConnection;
 
 export async function init(): Promise<void> {
-    try {
-        natsConnection = await connect({
-            servers: NATS_URL
-        });
-    } catch (err) {
-        console.log(`error connecting to nats: ${err.message}`);
-        return;
-    }
+    natsConnection = await connect({
+        servers: NATS_URL
+    });
 
     console.info(
-        `[TOKENIZATION-SERVICE] connected to ${natsConnection.getServer()}`
+        `[TOKENIZATION-SERVICE] connected to Nats ${natsConnection.getServer()}`
     );
 
     (async () => {
@@ -29,12 +24,17 @@ export async function init(): Promise<void> {
     })().then();
 }
 
-export async function registerHandlers(handlers: NatsHandler[]): Promise<void> {
-    await Promise.all(
-        handlers.map(async ([subject, handler]: NatsHandler) => {
-            await handler(natsConnection.subscribe(subject));
-        })
-    );
+export function registerHandlers(
+    prefix: string,
+    handlers: NatsHandler[]
+): void {
+    handlers.map(([subject, handler]) => {
+        const fullSubject = `${prefix}.${subject}`;
+        console.log(
+            `[TOKENIZATION-SERVICE] Registering handler ${fullSubject}`
+        );
+        handler(natsConnection.subscribe(fullSubject));
+    });
 }
 
 export function drain(): Promise<void> {

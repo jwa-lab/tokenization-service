@@ -13,8 +13,8 @@ Reads and Writes directly to and from the blockchain. For faster CRUD operations
 ## How to setup Dev environment:
 
 1. Start a minilab locally: https://github.com/jwa-lab/minilab
-2. Start the supporting services (item-store, elasticsearch) by running `docker-compose up` in this folder
-3. Start the service in dev mode which will automatically deploy a new Smart Contract for you upon startp. This should only be used in development mode and not in production!
+2. Start the mock server: `node ./mock-server/index.js` (mimics an item-store. You may also start the real item-store from its repository)
+3. Start the service in dev mode which will automatically deploy a new Smart Contract for you upon startup. This should only be used in development mode and not in production!
 
 ```
 ./run dev

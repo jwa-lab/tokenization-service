@@ -15,17 +15,16 @@ jobs:
             - checkout
             - run: npm install
             - run: npx minilab start
-            - run: sleep 10
+            - run: sleep 60
             - run:
-                  command: docker-compose up
+                  command: node ./mock-server/index.js
                   background: true
-            - run: sleep 180
             - run: ./run build
             - run:
                   command: ./run start
                   background: true
             # wait for the contract to be deployed
-            - run: sleep 30
+            - run: sleep 60
             - run: npm run test
 workflows:
     tests:
