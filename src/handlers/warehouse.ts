@@ -5,6 +5,7 @@ import {
     add_item,
     update_item,
     freeze_item,
+    assign_item,
     warehouseContract
 } from "../contracts/warehouse";
 import {
@@ -171,6 +172,69 @@ export const warehouseHandlers: NatsHandler[] = [
                             error: err
                         })
                     );
+                }
+            }
+        }
+    ],
+    [
+        "tokenization-service_assign_item",
+        async (subscription: Subscription): Promise<void> => {
+            for await (const message of subscription) {
+                const { item_id , user_id } = jsonCodec.decode(
+                    message.data
+                ) as JSONCollectible;
+
+                console.info(`Assigning item with id ${item_id}, to player with id ${user_id}`);
+
+                let operation;
+                let instance_number;
+
+                try {
+                    operation = await assign_item(item_id, user_id);
+                    await operation.confirmation(1, 1);
+
+                    message.respond(jsonCodec.encode(instance_number));
+
+                } catch (err) {
+                    console.error(err);
+                    message.respond(
+                        jsonCodec.encode({
+                            error: err
+                        })
+                    );
+                }
+            }
+        }           
+    ],
+    [
+        "tokenization-service_update_inventory_item",
+        async (subscription: Subscription): Promise<void> => {
+            for await (const message of subscription) {
+                const natsConnection = getConnection();
+                const item = jsonCodec.decode(message.data) as JSONCollectible;
+
+                try {
+                    const response = await natsConnection.request(
+                        "item_store_add_item",
+                        jsonCodec.encode({
+                            item
+                        })
+                    );
+
+                    message.respond(response.data)
+
+                    const updatedItem = await natsConnection.request(
+                        "tokenization-service_assign_item",
+                        jsonCodec.encode(
+                            item.item_id,
+                            user_id
+                        )
+                    );
+
+                    message.respond(updatedItem.data)
+                    
+                } catch (err) {
+                    console.error(err);
                 }
             }
         }

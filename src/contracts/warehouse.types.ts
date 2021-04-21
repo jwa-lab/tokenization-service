@@ -33,6 +33,11 @@ export interface WarehouseContract extends Contract {
             quantity: number
         ): ContractMethod<ContractProvider>;
 
+        assign_item(
+            user_id : number,
+            item_id : number
+        ): ContractMethod<ContractProvider>;
+        
         freeze_item(item_id: number): ContractMethod<ContractProvider>;
     };
 }

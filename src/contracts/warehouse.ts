@@ -36,6 +36,13 @@ export async function update_item(
         .send();
 }
 
+export async function assign_item(
+    item_id: number,
+    user_id: number
+): Promise<TransactionOperation> {
+    return await warehouseContract.methods.assign_item(item_id,user_id).send();
+}
+
 export async function freeze_item(
     item_id: number
 ): Promise<TransactionOperation> {
