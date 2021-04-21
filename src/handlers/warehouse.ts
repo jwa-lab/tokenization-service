@@ -180,63 +180,86 @@ export const warehouseHandlers: NatsHandler[] = [
         "tokenization-service_assign_item",
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
-                const { item_id , user_id } = jsonCodec.decode(
+                const natsConnection = getConnection();
+                const { item_id, user_id } = jsonCodec.decode(
                     message.data
                 ) as JSONCollectible;
-
-                console.info(`Assigning item with id ${item_id}, to player with id ${user_id}`);
-
-                let operation;
-                let instance_number;
-
-                try {
-                    operation = await assign_item(item_id, user_id);
-                    await operation.confirmation(1, 1);
-
-                    message.respond(jsonCodec.encode(instance_number));
-
-                } catch (err) {
-                    console.error(err);
-                    message.respond(
-                        jsonCodec.encode({
-                            error: err
-                        })
-                    );
-                }
-            }
-        }           
-    ],
-    [
-        "tokenization-service_update_inventory_item",
-        async (subscription: Subscription): Promise<void> => {
-            for await (const message of subscription) {
-                const natsConnection = getConnection();
-                const item = jsonCodec.decode(message.data) as JSONCollectible;
-
+                
+                
                 try {
                     const response = await natsConnection.request(
-                        "item_store_add_item",
+                        "item-store_get_item",
                         jsonCodec.encode({
-                            item
+                            item_id
                         })
                     );
 
-                    message.respond(response.data)
 
-                    const updatedItem = await natsConnection.request(
-                        "tokenization-service_assign_item",
-                        jsonCodec.encode(
-                            item.item_id,
-                            user_id
-                        )
-                    );
-
-                    message.respond(updatedItem.data)
+                    const checkQuantity = (response.available_quantity -= 1);
                     
-                } catch (err) {
-                    console.error(err);
-                }
+                    //Calculate new instance_number
+                    let instance_number = response.quantity - checkQuantity;
+                    //Add index inventory_item : {item_id,instance_number,item.data,user_id}
+                    //Check if available_quantity is true
+                    if (checkQuantity > 0){
+                        const test = await natsConnection.request(
+                            //New subject : Add_inventory_item
+                            "inventory_add_item",
+                            jsonCodec.encode({
+                                item_id,
+                                user_id,
+                                instance_number,
+                                response.data
+                            })
+                        );
+                    };
+
+                    message.respond(jsonCodec.encode(test.instance_number));
+                    
+                console.info(`Assigning item with id ${item_id}, to player with id ${user_id}`);
+
+                // let operation;
+
+                // try {
+                //     operation = await assign_item(item_id, user_id);
+                //     await operation.confirmation(1, 1);
+
+                //     message.respond(jsonCodec.encode(instance_number));
+
+                // } catch (err) {
+                //     console.error(err);
+                //     message.respond(
+                //         jsonCodec.encode({
+                //             error: err
+                //         })
+                //     );
+                // }
             }
-        }
-    ]
+        }         
+    ],
+    // [
+    //     "tokenization-service_update_inventory_item",
+    //     async (subscription: Subscription): Promise<void> => {
+    //         for await (const message of subscription) {
+    //             const natsConnection = getConnection();
+    //             const item = jsonCodec.decode(message.data) as JSONCollectible;
+
+    //                 message.respond(response.data)
+
+    //                 const updatedItem = await natsConnection.request(
+    //                     "tokenization-service_assign_item",
+    //                     jsonCodec.encode(
+    //                         item.item_id,
+    //                         user_id
+    //                     )
+    //                 );
+
+    //                 message.respond(updatedItem.data)
+                    
+    //             } catch (err) {
+    //                 console.error(err);
+    //             }
+    //         }
+    //     }
+    // ]
 ];
