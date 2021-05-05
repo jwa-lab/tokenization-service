@@ -42,12 +42,12 @@ export async function update_item(
     item_id: number,
     instance_number: number
 ): Promise<void> {
-    const warehouseContract = await getContract<InventoryContract>(
+    const inventoryContract = await getContract<InventoryContract>(
         inventory_address
     );
 
-    const operation = await warehouseContract.methods
-        .update_item(toMichelsonInventoryItem(data), item_id, instance_number)
+    const operation = await inventoryContract.methods
+        .update_item(toMichelsonInventoryItem(data), instance_number, item_id)
         .send();
 
     await operation.confirmation(1, 1);

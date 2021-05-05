@@ -6,7 +6,7 @@ import {
     update_item,
     get_item
 } from "../services/inventory";
-import { jsonCodec, NatsHandler } from "../services/nats";
+import { jsonCodec, PrivateNatsHandler } from "../services/nats";
 
 interface AssignItemRequest {
     inventory_address: string;
@@ -27,7 +27,7 @@ interface GetItemRequest {
     instance_number: number;
 }
 
-export const inventoryHandlers: NatsHandler[] = [
+export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
     [
         "create_inventory",
         async (subscription: Subscription): Promise<void> => {

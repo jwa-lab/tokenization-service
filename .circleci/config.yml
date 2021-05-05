@@ -15,7 +15,7 @@ jobs:
             - checkout
             - run: npm install
             - run: npx minilab start
-            - run: sleep 60
+            - run: sleep 180
             - run:
                   command: node ./mock-server/index.js
                   background: true
@@ -25,7 +25,7 @@ jobs:
                   background: true
             # wait for the contract to be deployed
             - run: sleep 60
-            - run: npm run test
+            - run: JEST_TIMEOUT=60000 npm run test
 workflows:
     tests:
         jobs:
