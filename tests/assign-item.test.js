@@ -1,4 +1,5 @@
 const { connect, JSONCodec } = require("nats");
+const { JEST_TIMEOUT = 20000 } = process.env;
 
 describe("Given Tokenization Service is connected to NATS", () => {
     let natsConnection;
@@ -10,10 +11,10 @@ describe("Given Tokenization Service is connected to NATS", () => {
 
     describe("And there is an available item", () => {
         let response;
-        let newItemId = 22;
+        let newItemId = 27;
 
         beforeAll(async () => {
-            jest.setTimeout(10000);
+            jest.setTimeout(JEST_TIMEOUT);
             response = await natsConnection.request(
                 "tokenization-service.add_warehouse_item",
                 jsonCodec.encode({
@@ -25,7 +26,7 @@ describe("Given Tokenization Service is connected to NATS", () => {
                     total_quantity: 9,
                     available_quantity: 9
                 }),
-                { max: 1, timeout: 10000 }
+                { max: 1, timeout: JEST_TIMEOUT }
             );
         });
 
@@ -33,11 +34,11 @@ describe("Given Tokenization Service is connected to NATS", () => {
             let inventoryAddress;
 
             beforeAll(async () => {
-                jest.setTimeout(20000);
+                jest.setTimeout(JEST_TIMEOUT);
                 response = await natsConnection.request(
                     "tokenization-service.create_inventory",
                     undefined,
-                    { timeout: 20000 }
+                    { timeout: JEST_TIMEOUT }
                 );
 
                 inventoryAddress = jsonCodec.decode(response.data)
@@ -50,7 +51,7 @@ describe("Given Tokenization Service is connected to NATS", () => {
 
             describe("When I assign this item to the new inventory", () => {
                 beforeAll(async () => {
-                    jest.setTimeout(10000);
+                    jest.setTimeout(JEST_TIMEOUT);
                     response = await natsConnection.request(
                         "tokenization-service.assign_inventory_item",
                         jsonCodec.encode({
@@ -58,7 +59,7 @@ describe("Given Tokenization Service is connected to NATS", () => {
                             item_id: newItemId,
                             instance_number: 1
                         }),
-                        { timeout: 10000 }
+                        { timeout: JEST_TIMEOUT }
                     );
                 });
 
@@ -85,6 +86,54 @@ describe("Given Tokenization Service is connected to NATS", () => {
                     it("Then returns the item data", () => {
                         expect(jsonCodec.decode(response.data)).toEqual({
                             XP: "97"
+                        });
+                    });
+                });
+
+                describe("And I update this item", () => {
+                    beforeAll(async () => {
+                        jest.setTimeout(JEST_TIMEOUT);
+                        response = await natsConnection.request(
+                            "tokenization-service.update_inventory_item",
+                            jsonCodec.encode({
+                                instance_number: 1,
+                                item_id: newItemId,
+                                inventory_address: inventoryAddress,
+                                data: {
+                                    club: "Real Madrid"
+                                }
+                            }),
+                            { timeout: JEST_TIMEOUT }
+                        );
+                    });
+
+                    it("Then reflects the request back", () => {
+                        expect(jsonCodec.decode(response.data)).toEqual({
+                            instance_number: 1,
+                            item_id: newItemId,
+                            inventory_address: inventoryAddress,
+                            data: {
+                                club: "Real Madrid"
+                            }
+                        });
+                    });
+
+                    describe("When I retrieve the item from the inventory", () => {
+                        beforeAll(async () => {
+                            response = await natsConnection.request(
+                                "tokenization-service.get_inventory_item",
+                                jsonCodec.encode({
+                                    inventory_address: inventoryAddress,
+                                    item_id: newItemId,
+                                    instance_number: 1
+                                })
+                            );
+                        });
+
+                        it("Then returns the item data", () => {
+                            expect(jsonCodec.decode(response.data)).toEqual({
+                                club: "Real Madrid"
+                            });
                         });
                     });
                 });

@@ -1,5 +1,5 @@
 import { Subscription } from "nats";
-import { NatsHandler, jsonCodec } from "../services/nats";
+import { PrivateNatsHandler, jsonCodec } from "../services/nats";
 import { WarehouseStorage } from "../contracts/warehouse.types";
 import {
     add_item,
@@ -13,20 +13,20 @@ import {
     JSONWarehouseItem
 } from "../contracts/warehouseItem";
 
-export const warehouseHandlers: NatsHandler[] = [
+export const warehousePrivateHandlers: PrivateNatsHandler[] = [
     [
         "add_warehouse_item",
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
-                const warehouseItem = new WarehouseItem(
-                    jsonCodec.decode(message.data) as JSONWarehouseItem
-                );
-
-                console.info(
-                    `[TOKENIZATION-SERVICE] Adding item with id ${warehouseItem.item_id}`
-                );
-
                 try {
+                    const warehouseItem = new WarehouseItem(
+                        jsonCodec.decode(message.data) as JSONWarehouseItem
+                    );
+
+                    console.info(
+                        `[TOKENIZATION-SERVICE] Adding item with id ${warehouseItem.item_id}`
+                    );
+
                     await add_item(warehouseItem);
 
                     message.respond(jsonCodec.encode(warehouseItem));
@@ -56,11 +56,7 @@ export const warehouseHandlers: NatsHandler[] = [
                 try {
                     await update_item(warehouseItem);
 
-                    message.respond(
-                        jsonCodec.encode({
-                            item_id: warehouseItem.item_id
-                        })
-                    );
+                    message.respond(jsonCodec.encode(warehouseItem));
                 } catch (err) {
                     console.error(err);
                     message.respond(
