@@ -1,7 +1,7 @@
 {
     "name": "tokenization-service",
     "private": true,
-    "version": "0.0.5",
+    "version": "0.0.6",
     "description": "Tokenization Service for Tezos",
     "main": "dist/index.js",
     "scripts": {

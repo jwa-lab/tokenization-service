@@ -1,6 +1,11 @@
 import { Subscription } from "nats";
 
-import { getConnection, jsonCodec, PublicNatsHandler } from "../services/nats";
+import {
+    AirlockPayload,
+    getConnection,
+    jsonCodec,
+    PublicNatsHandler
+} from "../services/nats";
 
 interface CreateInventoryRequest {
     user_id: string;
@@ -69,9 +74,13 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
             for await (const message of subscription) {
                 try {
                     const natsConnection = getConnection();
-                    const { user_id } = jsonCodec.decode(
+
+                    const data = jsonCodec.decode(
                         message.data
-                    ) as CreateInventoryRequest;
+                    ) as AirlockPayload;
+                    const {
+                        user_id
+                    } = (data.body as unknown) as CreateInventoryRequest;
 
                     const getUserResponse = await natsConnection.request(
                         "item-store.get_user",

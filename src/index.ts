@@ -12,6 +12,9 @@ import { init as initTezos } from "./services/tezos";
 import { warehousePrivateHandlers } from "./private/warehouse";
 import { inventoryPrivateHandlers } from "./private/inventory";
 import { tokenizePublicHandlers } from "./public/tokenize";
+import { warehousePublicHandlers } from "./public/warehouse";
+import { inventoryPublicHandlers } from "./public/inventory";
+import { infoPublicHandlers } from "./public/info";
 import { initWarehouseContract } from "./services/warehouse";
 
 async function start() {
@@ -29,6 +32,9 @@ async function start() {
         registerPrivateHandlers(SERVICE_NAME, inventoryPrivateHandlers);
 
         registerPublicHandlers(SERVICE_NAME, tokenizePublicHandlers);
+        registerPublicHandlers(SERVICE_NAME, infoPublicHandlers);
+        registerPublicHandlers(SERVICE_NAME, warehousePublicHandlers);
+        registerPublicHandlers(SERVICE_NAME, inventoryPublicHandlers);
 
         process.on("SIGINT", () => {
             console.log("[TOKENIZATION-SERVICE] Gracefully shutting down...");
