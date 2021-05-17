@@ -73,6 +73,49 @@
                 }
             },
             "response": []
+        },
+        {
+            "name": "Info",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{AIRLOCK_URL}}/tokenization-service/info",
+                    "host": ["{{AIRLOCK_URL}}"],
+                    "path": ["tokenization-service", "info"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Warehouse Item",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{AIRLOCK_URL}}/tokenization-service/warehouse/1",
+                    "host": ["{{AIRLOCK_URL}}"],
+                    "path": ["tokenization-service", "warehouse", "1"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Inventory Item",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{AIRLOCK_URL}}/tokenization-service/inventory/N_1meHkBKbvuvgx_eQ9U",
+                    "host": ["{{AIRLOCK_URL}}"],
+                    "path": [
+                        "tokenization-service",
+                        "inventory",
+                        "N_1meHkBKbvuvgx_eQ9U"
+                    ]
+                }
+            },
+            "response": []
         }
     ],
     "event": [
