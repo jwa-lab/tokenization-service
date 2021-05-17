@@ -57,7 +57,8 @@
         "@taquito/taquito": "^6.3.5-beta.0",
         "@taquito/utils": "^6.3.5-beta.0",
         "@types/node": "^14.11.2",
-        "nats": "^2.0.0-216"
+        "nats": "^2.0.0-216",
+        "yup": "^0.32.9"
     },
     "jest": {
         "testEnvironment": "node"
