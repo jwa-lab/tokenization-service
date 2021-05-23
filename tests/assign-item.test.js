@@ -84,9 +84,7 @@ describe("Given Tokenization Service is connected to NATS", () => {
                     });
 
                     it("Then returns the item data", () => {
-                        expect(jsonCodec.decode(response.data)).toEqual({
-                            XP: "97"
-                        });
+                        expect(jsonCodec.decode(response.data)).toEqual({});
                     });
                 });
 
