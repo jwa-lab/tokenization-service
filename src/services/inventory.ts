@@ -1,23 +1,24 @@
-import { deployContract, getContract } from "../services/tezos";
-
-import {
-    InventoryContract,
-    InventoryStorage
-} from "../contracts/inventory.types";
 import {
     fromMichelsonInventoryItem,
+    InventoryContract,
+    InventoryStorage,
     JSONInventoryItem,
     toMichelsonInventoryItem
-} from "../contracts/inventoryItem";
+} from "@jwalab/tokenization-service-contracts";
+import { MichelsonMap } from "@taquito/michelson-encoder";
+
+import { deployContract, getContract } from "../services/tezos";
 
 import { getWarehouseContract } from "./warehouse";
-import { MichelsonMap } from "@taquito/michelson-encoder";
 
 export async function initInventoryContract(): Promise<string> {
     const inventoryContract = await deployContract<
         InventoryContract,
         InventoryStorage
-    >("inventory", MichelsonMap.fromLiteral({}) as InventoryStorage);
+    >(
+        "inventory",
+        (MichelsonMap.fromLiteral({}) as unknown) as InventoryStorage
+    );
 
     return inventoryContract.address;
 }

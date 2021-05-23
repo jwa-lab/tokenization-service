@@ -1,5 +1,5 @@
+import { JSONInventoryItem } from "@jwalab/tokenization-service-contracts";
 import { Subscription } from "nats";
-import { JSONInventoryItem } from "../contracts/inventoryItem";
 
 import { getConnection, jsonCodec, PublicNatsHandler } from "../services/nats";
 

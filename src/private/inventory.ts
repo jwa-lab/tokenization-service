@@ -1,5 +1,6 @@
+import { JSONInventoryItem } from "@jwalab/tokenization-service-contracts";
+
 import { Subscription } from "nats";
-import { JSONInventoryItem } from "../contracts/inventoryItem";
 import {
     assign_item,
     initInventoryContract,

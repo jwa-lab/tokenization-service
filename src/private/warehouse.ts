@@ -1,17 +1,18 @@
+import {
+    JSONWarehouseItem,
+    MichelsonWarehouseItem,
+    WarehouseItem,
+    WarehouseStorage
+} from "@jwalab/tokenization-service-contracts";
 import { Subscription } from "nats";
 import { PrivateNatsHandler, jsonCodec } from "../services/nats";
-import { WarehouseStorage } from "../contracts/warehouse.types";
+
 import {
     add_item,
     update_item,
     freeze_item,
     warehouseContract
 } from "../services/warehouse";
-import {
-    WarehouseItem,
-    MichelsonWarehouseItem,
-    JSONWarehouseItem
-} from "../contracts/warehouseItem";
 
 export const warehousePrivateHandlers: PrivateNatsHandler[] = [
     [
