@@ -5,6 +5,7 @@ import {
     WarehouseStorage
 } from "@jwalab/tokenization-service-contracts";
 import { Subscription } from "nats";
+import { SERVICE_NAME } from "../config";
 import { PrivateNatsHandler, jsonCodec } from "../services/nats";
 
 import {
@@ -40,6 +41,9 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ],
     [
@@ -67,6 +71,9 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ],
     [
@@ -98,6 +105,9 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ],
     [

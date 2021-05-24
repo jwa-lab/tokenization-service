@@ -1,4 +1,5 @@
 import { Subscription } from "nats";
+import { SERVICE_NAME } from "../config";
 
 import {
     AirlockPayload,
@@ -65,6 +66,9 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ],
     [
@@ -132,6 +136,9 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ],
     [
@@ -192,6 +199,9 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ],
     [
@@ -254,6 +264,9 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ]
 ];
