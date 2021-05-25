@@ -10,6 +10,8 @@
         "clean": "rm -rf ./dist/*",
         "build": "npx tsc",
         "test": "jest tests/ --runInBand",
+        "test-add": "jest tests/add-item.test.js --silent=false",
+        "test-assign": "jest tests/assign-item.test.js --silent=false",
         "start": "node ./dist/index.js",
         "dev": "concurrently \"npx tsc -w\" \"nodemon dist/index.js\""
     },
