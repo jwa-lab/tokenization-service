@@ -1,5 +1,4 @@
 import { Subscription } from "nats";
-import { inventoryCreateSchema } from "../services/validatorSchema";
 import {
     AirlockPayload,
     getConnection,
@@ -94,7 +93,6 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         inventory_address?: string;
                     };
 
-                    inventoryCreateSchema.validate(user);
                     if (user.inventory_address) {
                         throw new Error(
                             `User ${user_id} already has an inventory assigned. Assigning a new inventory will result in permanent loss of collectibles.`
