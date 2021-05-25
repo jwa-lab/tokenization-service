@@ -49,6 +49,41 @@ describe("Given Tokenization Service is connected to NATS", () => {
                 expect(typeof inventoryAddress).toBe("string");
             });
 
+            describe("When I try to assign this item to the new inventory but with a Validation Error (a field [inventory_address] is missing)", () => {
+                beforeAll(async () => {
+                    jest.setTimeout(JEST_TIMEOUT);
+                    response = await natsConnection.request(
+                        "tokenization-service.assign_inventory_item",
+                        jsonCodec.encode({
+                            item_id: newItemId,
+                            instance_number: 1
+                        }),
+                        { timeout: JEST_TIMEOUT }
+                    );
+                });
+
+                it("Then returns an error", () => {
+                    expect(jsonCodec.decode(response.data).error).toEqual("The inventory address must be provided, don't forget it ! ");
+                });
+
+                describe("When I try to assign this item to the new inventory but with a Validation Error (a field [instance_number] is wrong-typed)", () => {
+                    beforeAll(async () => {
+                        jest.setTimeout(JEST_TIMEOUT);
+                        response = await natsConnection.request(
+                            "tokenization-service.assign_inventory_item",
+                            jsonCodec.encode({
+                                inventory_address: inventoryAddress,
+                                item_id: newItemId,
+                                instance_number: "azerty"
+                            }),
+                            { timeout: JEST_TIMEOUT }
+                        );
+                    });
+
+                    it("Then returns an error", () => {
+                        expect(jsonCodec.decode(response.data).error).toEqual("instance_number must be a number");
+                    });
+
             describe("When I assign this item to the new inventory", () => {
                 beforeAll(async () => {
                     jest.setTimeout(JEST_TIMEOUT);
@@ -84,9 +119,7 @@ describe("Given Tokenization Service is connected to NATS", () => {
                     });
 
                     it("Then returns the item data", () => {
-                        expect(jsonCodec.decode(response.data)).toEqual({
-                            XP: "97"
-                        });
+                        expect(jsonCodec.decode(response.data)).toEqual({});
                     });
                 });
 
@@ -137,6 +170,8 @@ describe("Given Tokenization Service is connected to NATS", () => {
                         });
                     });
                 });
+            });
+            });
             });
         });
     });

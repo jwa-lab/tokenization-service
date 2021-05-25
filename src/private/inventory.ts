@@ -1,5 +1,7 @@
+import { JSONInventoryItem } from "@jwalab/tokenization-service-contracts";
+
 import { Subscription } from "nats";
-import { JSONInventoryItem } from "../contracts/inventoryItem";
+import { SERVICE_NAME } from "../config";
 import {
     assign_item,
     initInventoryContract,
@@ -7,7 +9,7 @@ import {
     get_item
 } from "../services/inventory";
 import { jsonCodec, PrivateNatsHandler } from "../services/nats";
-import { inventoryItemSchema } from "../services/validatorSchema";
+import { inventoryItemSchema } from "../services/validatorSchema"
 
 interface AssignItemRequest {
     inventory_address: string;
@@ -54,6 +56,9 @@ export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ],
     [
@@ -89,6 +94,9 @@ export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ],
     [
@@ -124,6 +132,9 @@ export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ],
     [

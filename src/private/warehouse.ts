@@ -1,17 +1,20 @@
+import {
+    JSONWarehouseItem,
+    MichelsonWarehouseItem,
+    WarehouseItem,
+    WarehouseStorage
+} from "@jwalab/tokenization-service-contracts";
 import { Subscription } from "nats";
+import { SERVICE_NAME } from "../config";
 import { PrivateNatsHandler, jsonCodec } from "../services/nats";
-import { WarehouseStorage } from "../contracts/warehouse.types";
+import { warehouseItemSchema } from "../services/validatorSchema";
+
 import {
     add_item,
     update_item,
     freeze_item,
     warehouseContract
 } from "../services/warehouse";
-import {
-    WarehouseItem,
-    MichelsonWarehouseItem,
-    JSONWarehouseItem
-} from "../contracts/warehouseItem";
 
 export const warehousePrivateHandlers: PrivateNatsHandler[] = [
     [
@@ -27,6 +30,7 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                         `[TOKENIZATION-SERVICE] Adding item with id ${warehouseItem.item_id}`
                     );
 
+                    await warehouseItemSchema.validate(warehouseItem);
                     await add_item(warehouseItem);
 
                     message.respond(jsonCodec.encode(warehouseItem));
@@ -39,6 +43,9 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ],
     [
@@ -66,6 +73,9 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ],
     [
@@ -97,6 +107,9 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                     );
                 }
             }
+        },
+        {
+            queue: SERVICE_NAME
         }
     ],
     [

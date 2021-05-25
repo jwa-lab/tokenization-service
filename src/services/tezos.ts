@@ -13,9 +13,8 @@ let tezosClient: TezosToolkit;
 export async function init(): Promise<void> {
     console.log(`[TOKENIZATION-SERVICE] Using Tezos RPC URI ${TEZOS_RPC_URI}`);
 
-    tezosClient = new TezosToolkit();
+    tezosClient = new TezosToolkit(TEZOS_RPC_URI);
     tezosClient.setProvider({
-        rpc: TEZOS_RPC_URI,
         config: {
             // I wish I could override this confirmation in config.json but this currently doesn't work, resorting to calling
             // operation.confirmation(1, 1) instead everywhere in my code. will debug and submit a Taquito bug fix on GitHub if necessary
