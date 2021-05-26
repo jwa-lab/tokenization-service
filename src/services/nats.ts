@@ -1,4 +1,10 @@
-import { connect, NatsConnection, Subscription, JSONCodec, SubscriptionOptions } from "nats";
+import {
+    connect,
+    NatsConnection,
+    Subscription,
+    JSONCodec,
+    SubscriptionOptions
+} from "nats";
 import { NATS_URL } from "../config";
 
 type JSONValue =
@@ -49,12 +55,12 @@ export function registerPrivateHandlers(
     prefix: string,
     handlers: PrivateNatsHandler[]
 ): void {
-    handlers.map(([subject, handler]) => {
+    handlers.map(([subject, handler, options]) => {
         const fullSubject = `${prefix}.${subject}`;
         console.log(
             `[TOKENIZATION-SERVICE] Registering handler ${fullSubject}`
         );
-        handler(natsConnection.subscribe(fullSubject));
+        handler(natsConnection.subscribe(fullSubject, options));
     });
 }
 
@@ -62,12 +68,12 @@ export function registerPublicHandlers(
     prefix: string,
     handlers: PublicNatsHandler[]
 ): void {
-    handlers.map(([method, subject, handler]) => {
+    handlers.map(([method, subject, handler, options]) => {
         const fullSubject = `${method}:${prefix}.${subject}`;
         console.log(
             `[TOKENIZATION-SERVICE] Registering public handler ${fullSubject}`
         );
-        handler(natsConnection.subscribe(fullSubject));
+        handler(natsConnection.subscribe(fullSubject, options));
     });
 }
 
