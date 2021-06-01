@@ -9,6 +9,7 @@ import {
     get_item
 } from "../services/inventory";
 import { jsonCodec, PrivateNatsHandler } from "../services/nats";
+import * as yup from "yup";
 
 interface AssignItemRequest {
     inventory_address: string;
@@ -28,6 +29,52 @@ interface GetItemRequest {
     item_id: number;
     instance_number: number;
 }
+
+const InventoryItemSchema = yup.object({
+    inventory_address: yup
+        .string()
+        .strict()
+        .typeError("inventory_address must be a string.")
+        .required("The inventory_address (string) must be provided."),
+    item_id: yup
+        .number()
+        .typeError("item_id must be a number.")
+        .positive("item_id must be a positive number.")
+        .required("The item_id (integer) must be provided."),
+    instance_number: yup
+        .number()
+        .typeError("instance_number must be a number.")
+        .positive("instance number must be a positive number.")
+        .required("The instance_number (integer) must be provided.")
+});
+
+const Data = yup.object({
+    data: yup.lazy((value) => {
+        if (value === undefined || value === null) {
+            return yup
+                .object()
+                .required("The data (object of string(s)) must be provided.");
+        } else {
+            const schema = Object.keys(value).reduce(
+                (acc: any, curr: string) => {
+                    acc[curr] = yup
+                        .string()
+                        .strict()
+                        .typeError("data's field must be a string.")
+                        .required(
+                            "The data's field (string) must be provided."
+                        );
+                    return acc;
+                },
+                {}
+            );
+            return yup
+                .object()
+                .shape(schema)
+                .required("The data (object of string(s)) must be provided.");
+        }
+    })
+});
 
 export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
     [
@@ -71,6 +118,12 @@ export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
                 } = jsonCodec.decode(message.data) as AssignItemRequest;
 
                 try {
+                    await InventoryItemSchema.validate({
+                        instance_number,
+                        inventory_address,
+                        item_id
+                    });
+
                     await assign_item(
                         inventory_address,
                         item_id,
@@ -108,6 +161,12 @@ export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
                 } = jsonCodec.decode(message.data) as UpdateItemRequest;
 
                 try {
+                    await InventoryItemSchema.validate({
+                        instance_number,
+                        inventory_address,
+                        item_id
+                    });
+                    await Data.validate({ data });
                     await update_item(
                         inventory_address,
                         data,
@@ -145,6 +204,11 @@ export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
                 } = jsonCodec.decode(message.data) as GetItemRequest;
 
                 try {
+                    await InventoryItemSchema.validate({
+                        instance_number,
+                        inventory_address,
+                        item_id
+                    });
                     const item = await get_item(
                         inventory_address,
                         item_id,

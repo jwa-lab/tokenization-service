@@ -55,12 +55,12 @@ export function registerPrivateHandlers(
     prefix: string,
     handlers: PrivateNatsHandler[]
 ): void {
-    handlers.map(([subject, handler, options]) => {
+    handlers.map(([subject, handler]) => {
         const fullSubject = `${prefix}.${subject}`;
         console.log(
             `[TOKENIZATION-SERVICE] Registering handler ${fullSubject}`
         );
-        handler(natsConnection.subscribe(fullSubject, options));
+        handler(natsConnection.subscribe(fullSubject));
     });
 }
 
@@ -68,12 +68,12 @@ export function registerPublicHandlers(
     prefix: string,
     handlers: PublicNatsHandler[]
 ): void {
-    handlers.map(([method, subject, handler, options]) => {
+    handlers.map(([method, subject, handler]) => {
         const fullSubject = `${method}:${prefix}.${subject}`;
         console.log(
             `[TOKENIZATION-SERVICE] Registering public handler ${fullSubject}`
         );
-        handler(natsConnection.subscribe(fullSubject, options));
+        handler(natsConnection.subscribe(fullSubject));
     });
 }
 

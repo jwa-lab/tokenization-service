@@ -7,6 +7,7 @@ import {
 import { Subscription } from "nats";
 import { SERVICE_NAME } from "../config";
 import { PrivateNatsHandler, jsonCodec } from "../services/nats";
+import * as yup from "yup";
 
 import {
     add_item,
@@ -14,6 +15,65 @@ import {
     freeze_item,
     warehouseContract
 } from "../services/warehouse";
+
+const WarehouseItemSchema = yup.object({
+    available_quantity: yup
+        .number()
+        .typeError("available_quantity must be a number.")
+        .required("The available_quantity (integer) must be provided."),
+    no_update_after: yup
+        .string()
+        .strict()
+        .typeError("available_quantity must be a number.")
+        .optional(),
+    item_id: yup
+        .number()
+        .typeError("item_id must be a number.")
+        .positive("item_id must be a positive number.")
+        .required("The item_id (integer) must be provided."),
+    name: yup
+        .string()
+        .strict()
+        .typeError("name must be a string.")
+        .required("The name (string) must be provided."),
+    data: yup.lazy((value) => {
+        if (value === undefined || value === null) {
+            return yup
+                .object()
+                .required("The data (object of string(s)) must be provided.");
+        } else {
+            const schema = Object.keys(value).reduce(
+                (acc: any, curr: string) => {
+                    acc[curr] = yup
+                        .string()
+                        .strict()
+                        .typeError("data's field must be a string.")
+                        .required(
+                            "The data's field (string) must be provided."
+                        );
+                    return acc;
+                },
+                {}
+            );
+            return yup
+                .object()
+                .shape(schema)
+                .required("The data (object of string(s)) must be provided.");
+        }
+    }),
+    total_quantity: yup
+        .number()
+        .typeError("total_quantity must be a number.")
+        .required("The total_quantity (integer) must be provided.")
+});
+
+const ItemN = yup.object({
+    item_id: yup
+        .number()
+        .typeError("item_id must be a number.")
+        .positive("item_id must be a positive number.")
+        .required("The item_id (integer) must be provided.")
+});
 
 export const warehousePrivateHandlers: PrivateNatsHandler[] = [
     [
@@ -28,7 +88,7 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                     console.info(
                         `[TOKENIZATION-SERVICE] Adding item with id ${warehouseItem.item_id}`
                     );
-
+                    await WarehouseItemSchema.validate(warehouseItem);
                     await add_item(warehouseItem);
 
                     message.respond(jsonCodec.encode(warehouseItem));
@@ -59,6 +119,7 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                 );
 
                 try {
+                    WarehouseItemSchema.validate(warehouseItem);
                     await update_item(warehouseItem);
 
                     message.respond(jsonCodec.encode(warehouseItem));
@@ -89,6 +150,8 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                 );
 
                 try {
+                    const number_item_id = Number(item_id);
+                    ItemN.validate({ number_item_id });
                     await freeze_item(Number(item_id));
 
                     message.respond(
@@ -122,6 +185,8 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                 ) as JSONWarehouseItem;
 
                 try {
+                    const string_item_id = String(item_id);
+                    ItemN.validate(string_item_id);
                     const warehouseItem = (await storage.warehouse.get(
                         String(item_id)
                     )) as MichelsonWarehouseItem;
