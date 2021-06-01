@@ -1,4 +1,10 @@
-import { connect, NatsConnection, Subscription, JSONCodec, SubscriptionOptions } from "nats";
+import {
+    connect,
+    NatsConnection,
+    Subscription,
+    JSONCodec,
+    SubscriptionOptions
+} from "nats";
 import { NATS_URL } from "../config";
 
 type JSONValue =

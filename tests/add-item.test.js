@@ -85,7 +85,9 @@ describe("Given Tokenization Service is connected to NATS", () => {
             });
 
             it("then returns an error", () => {
-                expect(jsonCodec.decode(response.data).error).toEqual("The name must be provided, don't forget it ! ");
+                expect(jsonCodec.decode(response.data).error.message).toEqual(
+                    "The name (string) must be provided."
+                );
             });
         });
 
@@ -108,7 +110,9 @@ describe("Given Tokenization Service is connected to NATS", () => {
             });
 
             it("then returns an error", () => {
-                expect(jsonCodec.decode(response.data).error).toEqual("total_quantity must be a number");
+                expect(jsonCodec.decode(response.data).error.message).toEqual(
+                    "total_quantity must be a number."
+                );
             });
         });
 
