@@ -9,6 +9,7 @@ import {
     get_item
 } from "../services/inventory";
 import { jsonCodec, PrivateNatsHandler } from "../services/nats";
+import { inventoryItemSchema } from "../services/validatorSchema";
 
 interface AssignItemRequest {
     inventory_address: string;
@@ -71,6 +72,12 @@ export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
                 } = jsonCodec.decode(message.data) as AssignItemRequest;
 
                 try {
+                    await inventoryItemSchema.validate({
+                        instance_number,
+                        inventory_address,
+                        item_id
+                    });
+
                     await assign_item(
                         inventory_address,
                         item_id,

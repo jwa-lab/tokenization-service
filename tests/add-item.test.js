@@ -67,6 +67,55 @@ describe("Given Tokenization Service is connected to NATS", () => {
             });
         });
 
+        describe("When I add an item with a Validation Error (a field [name] is missing)", () => {
+            beforeAll(async () => {
+                jest.setTimeout(JEST_TIMEOUT);
+                response = await natsConnection.request(
+                    "tokenization-service.add_warehouse_item",
+                    jsonCodec.encode({
+                        data: {
+                            XP: "97"
+                        },
+                        item_id: itemId,
+                        total_quantity: 1000,
+                        available_quantity: 1000
+                    }),
+                    { max: 1, timeout: JEST_TIMEOUT }
+                );
+            });
+
+            it("then returns an error", () => {
+                expect(jsonCodec.decode(response.data).error.message).toEqual(
+                    "The name (string) must be provided."
+                );
+            });
+        });
+
+        describe("When I add an item with a Validation Error (a field [total_quantity] is wrong-typed)", () => {
+            beforeAll(async () => {
+                jest.setTimeout(JEST_TIMEOUT);
+                response = await natsConnection.request(
+                    "tokenization-service.add_warehouse_item",
+                    jsonCodec.encode({
+                        data: {
+                            XP: "97"
+                        },
+                        item_id: itemId,
+                        name: "Christiano Ronaldo",
+                        total_quantity: "aerty",
+                        available_quantity: 1000
+                    }),
+                    { max: 1, timeout: JEST_TIMEOUT }
+                );
+            });
+
+            it("then returns an error", () => {
+                expect(jsonCodec.decode(response.data).error.message).toEqual(
+                    "total_quantity must be a number."
+                );
+            });
+        });
+
         describe("When I retrieve the item by id", () => {
             beforeAll(async () => {
                 jest.setTimeout(JEST_TIMEOUT);

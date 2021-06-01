@@ -1,7 +1,7 @@
 {
     "name": "tokenization-service",
     "private": true,
-    "version": "0.0.9",
+    "version": "0.0.8",
     "description": "Tokenization Service for Tezos",
     "main": "dist/index.js",
     "scripts": {
@@ -10,6 +10,8 @@
         "clean": "rm -rf ./dist/*",
         "build": "npx tsc",
         "test": "jest tests/ --runInBand",
+        "test-add": "jest tests/add-item.test.js --silent=false",
+        "test-assign": "jest tests/assign-item.test.js --silent=false",
         "start": "node ./dist/index.js",
         "dev": "concurrently \"npx tsc -w\" \"nodemon dist/index.js\""
     },
@@ -57,7 +59,8 @@
         "@taquito/taquito": "^8.1.1",
         "@taquito/utils": "^8.1.1",
         "@types/node": "^14.11.2",
-        "nats": "^2.0.0-216"
+        "nats": "^2.0.0-216",
+        "yup": "^0.32.9"
     },
     "jest": {
         "testEnvironment": "node"

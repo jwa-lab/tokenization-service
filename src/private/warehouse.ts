@@ -7,6 +7,7 @@ import {
 import { Subscription } from "nats";
 import { SERVICE_NAME } from "../config";
 import { PrivateNatsHandler, jsonCodec } from "../services/nats";
+import { warehouseItemSchema } from "../services/validatorSchema";
 
 import {
     add_item,
@@ -29,6 +30,7 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                         `[TOKENIZATION-SERVICE] Adding item with id ${warehouseItem.item_id}`
                     );
 
+                    await warehouseItemSchema.validate(warehouseItem);
                     await add_item(warehouseItem);
 
                     message.respond(jsonCodec.encode(warehouseItem));
