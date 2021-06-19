@@ -1,0 +1,328 @@
+{
+    "tags": [
+        {
+            "name": "tokenization-service/warehouse",
+            "description": "Warehouse items are prototype items ready to be assigned to users. Mint your Warehouse items in the blockchain.",
+            "externalDocs": {
+                "description": "Warehouse tutorial",
+                "url": "https://jwa-lab.github.io/platform-docs/docs/tutorial/mint-an-item"
+            }
+        },
+        {
+            "name": "tokenization-service/inventory",
+            "description": "Inventory items are Warehouse items that have been assigned to a user's inventory. Assign items to users in the blockchain.",
+            "externalDocs": {
+                "description": "Inventory tutorial",
+                "url": "https://jwa-lab.github.io/platform-docs/docs/tutorial/mint-inventory-item"
+            }
+        },
+        {
+            "name": "tokenization-service/info",
+            "description": "Get various information about the blockchain"
+        }
+    ],
+    "paths": {
+        "/tokenization-service/warehouse/${item_id}": {
+            "put": {
+                "tags": ["tokenization-service/warehouse"],
+                "summary": "Mint an existing warehouse item",
+                "operationId": "tokenizeWarehouseItem",
+                "parameters": [
+                    {
+                        "name": "item_id",
+                        "in": "path",
+                        "description": "Id of the item to mint",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Item"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "get": {
+                "tags": ["tokenization-service/warehouse"],
+                "summary": "Get a previously minted warehouse item",
+                "operationId": "getWarehouseItem",
+                "parameters": [
+                    {
+                        "name": "item_id",
+                        "in": "path",
+                        "description": "Id of the item to mint",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Item"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/tokenization-service/inventory": {
+            "post": {
+                "tags": ["tokenization-service/inventory"],
+                "summary": "Create an inventory for a given user id.",
+                "operationId": "createInventory",
+                "requestBody": {
+                    "description": "Create an inventory for a given user id.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "user_id": {
+                                        "type": "string",
+                                        "format": "document-id"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "string",
+                                            "format": "document-id"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/tokenization-service/inventory/{inventory_item_id}": {
+            "put": {
+                "tags": ["tokenization-service/inventory"],
+                "summary": "Create an inventory item in the blockchain.",
+                "operationId": "assignInventoryItem",
+                "parameters": [
+                    {
+                        "name": "inventory_item_id",
+                        "in": "path",
+                        "description": "Id of the inventory item to create (the id in the item-store)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "document-id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "item_id": {
+                                            "type": "number",
+                                            "format": "int64"
+                                        },
+                                        "instance_number": {
+                                            "type": "number",
+                                            "format": "int64"
+                                        },
+                                        "inventory_address": {
+                                            "type": "string",
+                                            "format": "kt1-address"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "patch": {
+                "tags": ["tokenization-service/inventory"],
+                "summary": "Update an inventory item in the blockchain.",
+                "operationId": "updateInventoryItem",
+                "parameters": [
+                    {
+                        "name": "inventory_item_id",
+                        "in": "path",
+                        "description": "Id of the inventory item to update (the id in the item-store)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "document-id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update an inventory item in the blockchain. Inventory items can evolve independently from each other.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "item_id": {
+                                            "type": "number",
+                                            "format": "int64"
+                                        },
+                                        "instance_number": {
+                                            "type": "number",
+                                            "format": "int64"
+                                        },
+                                        "inventory_address": {
+                                            "type": "string",
+                                            "format": "kt1-address"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "get": {
+                "tags": ["tokenization-service/inventory"],
+                "summary": "Retrieve an inventory item from the blockchain.",
+                "operationId": "getInventoryItem",
+                "parameters": [
+                    {
+                        "name": "inventory_item_id",
+                        "in": "path",
+                        "description": "Id of the inventory item to retrieve (the id in the item-store)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "document-id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/tokenization-service": {
+            "get": {
+                "tags": ["tokenization-service/info"],
+                "summary": "Get various information about the service.",
+                "operationId": "getInfo",
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "warehouse_address": {
+                                            "type": "string",
+                                            "format": "kt1-address"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
