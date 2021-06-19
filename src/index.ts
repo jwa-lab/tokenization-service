@@ -16,6 +16,7 @@ import { warehousePublicHandlers } from "./public/warehouse";
 import { inventoryPublicHandlers } from "./public/inventory";
 import { infoPublicHandlers } from "./public/info";
 import { initWarehouseContract } from "./services/warehouse";
+import { init as initDocs } from "./services/docs";
 
 async function start() {
     async function shutdown(exitCode: number) {
@@ -27,6 +28,7 @@ async function start() {
         await initNats();
         await initTezos();
         await initWarehouseContract();
+        await initDocs();
 
         registerPrivateHandlers(SERVICE_NAME, warehousePrivateHandlers);
         registerPrivateHandlers(SERVICE_NAME, inventoryPrivateHandlers);
