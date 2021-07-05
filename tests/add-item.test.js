@@ -67,6 +67,31 @@ describe("Given Tokenization Service is connected to NATS", () => {
             });
         });
 
+        describe("When I add an item with a Validation Error (a field [total_quantity] is wrong-typed)", () => {
+            beforeAll(async () => {
+                jest.setTimeout(JEST_TIMEOUT);
+                response = await natsConnection.request(
+                    "tokenization-service.add_warehouse_item",
+                    jsonCodec.encode({
+                        data: {
+                            XP: "1000"
+                        },
+                        item_id: itemId,
+                        name: "Christiano Ronaldo",
+                        total_quantity: "azrety",
+                        available_quantity: 1000
+                    }),
+                    { max: 1, timeout: JEST_TIMEOUT }
+                );
+            });
+
+            it("then returns an error", () => {
+                expect(jsonCodec.decode(response.data).error.message).toEqual(
+                    "total_quantity must be a number."
+                );
+            });
+        });
+
         describe("When I retrieve the item by id", () => {
             beforeAll(async () => {
                 jest.setTimeout(JEST_TIMEOUT);
