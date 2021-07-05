@@ -12,7 +12,6 @@ export const warehousePublicHandlers: PublicNatsHandler[] = [
                     const natsConnection = getConnection();
                     const urlParameter = String(message.subject).split(".")[2];
 
-
                     const response = await natsConnection.request(
                         "tokenization-service.get_warehouse_item",
                         jsonCodec.encode({

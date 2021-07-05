@@ -5,9 +5,10 @@ import {
     WarehouseStorage
 } from "@jwalab/tokenization-service-contracts";
 import { Subscription } from "nats";
+import * as yup from "yup";
+
 import { SERVICE_NAME } from "../config";
 import { PrivateNatsHandler, jsonCodec } from "../services/nats";
-import * as yup from "yup";
 
 import {
     add_item,

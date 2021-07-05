@@ -1,7 +1,7 @@
 import { JSONInventoryItem } from "@jwalab/tokenization-service-contracts";
-
+import * as yup from "yup";
 import { Subscription } from "nats";
-import { SERVICE_NAME } from "../config";
+
 import {
     assign_item,
     initInventoryContract,
@@ -9,7 +9,8 @@ import {
     get_item
 } from "../services/inventory";
 import { jsonCodec, PrivateNatsHandler } from "../services/nats";
-import * as yup from "yup";
+
+import { SERVICE_NAME } from "../config";
 
 interface AssignItemRequest {
     inventory_address: string;

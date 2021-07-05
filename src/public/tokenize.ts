@@ -10,7 +10,6 @@ import {
 } from "../services/nats";
 import { UserSchema } from "./inventory";
 
-
 interface CreateInventoryRequest {
     user_id: string;
 }
