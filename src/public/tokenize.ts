@@ -1,5 +1,6 @@
 import { Subscription } from "nats";
 import { SERVICE_NAME } from "../config";
+import * as yup from "yup";
 
 import {
     AirlockPayload,
@@ -7,6 +8,8 @@ import {
     jsonCodec,
     PublicNatsHandler
 } from "../services/nats";
+import { UserSchema } from "./inventory";
+
 
 interface CreateInventoryRequest {
     user_id: string;
@@ -29,6 +32,23 @@ interface GetInventoryItemResponse {
     data: { [k: string]: string };
 }
 
+export const SearchByUserIdRequest = yup.object({
+    item_id: yup
+        .number()
+        .strict()
+        .typeError("item_id must be an integer.")
+        .min(0)
+        .defined("The item_id (positive integer) must be provided.")
+});
+
+const InventorySchema = yup.object({
+    inventory_item_id: yup
+        .string()
+        .strict()
+        .typeError("inventory_item_id must be a string.")
+        .defined("The inventory_item_id (string) must be provided.")
+});
+
 export const tokenizePublicHandlers: PublicNatsHandler[] = [
     [
         "PUT",
@@ -40,6 +60,8 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
 
                     const urlParameter = String(message.subject).split(".")[2];
 
+                    const item_id = urlParameter;
+                    await SearchByUserIdRequest.validate({ item_id });
                     const response = await natsConnection.request(
                         "item-store.get_warehouse_item",
                         jsonCodec.encode({
@@ -86,6 +108,7 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         user_id
                     } = (data.body as unknown) as CreateInventoryRequest;
 
+                    await UserSchema.validate({ user_id });
                     const getUserResponse = await natsConnection.request(
                         "item-store.get_user",
                         jsonCodec.encode({
@@ -114,6 +137,7 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         newInventoryResponse.data
                     ) as CreateInventoryResponse).inventory_address;
 
+                    await UserSchema.validate({ user_id });
                     const updateUserResponse = await natsConnection.request(
                         "item-store.update_user",
                         jsonCodec.encode({
@@ -152,6 +176,8 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         "."
                     );
 
+                    const inventory_item_id = itemDocumentId;
+                    await InventorySchema.validate({ inventory_item_id });
                     const getInventoryItemResponse = await natsConnection.request(
                         "item-store.get_inventory_item",
                         jsonCodec.encode({
@@ -167,6 +193,7 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         getInventoryItemResponse.data
                     ) as GetInventoryItemResponse;
 
+                    await UserSchema.validate({ user_id });
                     const getUserResponse = await natsConnection.request(
                         "item-store.get_user",
                         jsonCodec.encode({
@@ -215,6 +242,8 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         "."
                     );
 
+                    const inventory_item_id = itemDocumentId;
+                    await InventorySchema.validate({ inventory_item_id });
                     const getInventoryItemResponse = await natsConnection.request(
                         "item-store.get_inventory_item",
                         jsonCodec.encode({
@@ -231,6 +260,7 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         getInventoryItemResponse.data
                     ) as GetInventoryItemResponse;
 
+                    await UserSchema.validate({ user_id });
                     const getUserResponse = await natsConnection.request(
                         "item-store.get_user",
                         jsonCodec.encode({

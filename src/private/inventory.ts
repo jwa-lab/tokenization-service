@@ -30,7 +30,7 @@ interface GetItemRequest {
     instance_number: number;
 }
 
-const InventoryItemSchema = yup.object({
+export const InventoryItemSchema = yup.object({
     inventory_address: yup
         .string()
         .strict()

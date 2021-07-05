@@ -21,11 +21,6 @@ const WarehouseItemSchema = yup.object({
         .number()
         .typeError("available_quantity must be a number.")
         .required("The available_quantity (integer) must be provided."),
-    no_update_after: yup
-        .string()
-        .strict()
-        .typeError("available_quantity must be a number.")
-        .optional(),
     item_id: yup
         .number()
         .typeError("item_id must be a number.")
