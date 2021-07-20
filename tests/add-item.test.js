@@ -61,7 +61,7 @@ describe("Given Tokenization Service is connected to NATS", () => {
             });
 
             it("then returns an error", () => {
-                expect(jsonCodec.decode(response.data).error.message).toBe(
+                expect(jsonCodec.decode(response.data).error).toBe(
                     "ITEM_ID_ALREADY_EXISTS"
                 );
             });

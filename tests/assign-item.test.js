@@ -41,8 +41,9 @@ describe("Given Tokenization Service is connected to NATS", () => {
                     { timeout: JEST_TIMEOUT }
                 );
 
-                inventoryAddress = jsonCodec.decode(response.data)
-                    .inventory_address;
+                inventoryAddress = jsonCodec.decode(
+                    response.data
+                ).inventory_address;
             });
 
             it("Then returns the new inventory address", () => {
