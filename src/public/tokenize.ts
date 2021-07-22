@@ -1,4 +1,5 @@
 import { Subscription } from "nats";
+
 import { SERVICE_NAME } from "../config";
 
 import {
@@ -7,6 +8,11 @@ import {
     jsonCodec,
     PublicNatsHandler
 } from "../services/nats";
+import {
+    inventoryIdValidator,
+    itemIdValidator,
+    userIdValidator
+} from "../utils/validators";
 
 interface CreateInventoryRequest {
     user_id: string;
@@ -38,12 +44,14 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                 try {
                     const natsConnection = getConnection();
 
-                    const urlParameter = String(message.subject).split(".")[2];
+                    const item_id = Number(message.subject.split(".")[2]);
+
+                    await itemIdValidator.validate(item_id);
 
                     const response = await natsConnection.request(
                         "item-store.get_warehouse_item",
                         jsonCodec.encode({
-                            item_id: urlParameter
+                            item_id
                         })
                     );
 
@@ -82,9 +90,12 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                     const data = jsonCodec.decode(
                         message.data
                     ) as AirlockPayload;
+
                     const {
                         user_id
                     } = (data.body as unknown) as CreateInventoryRequest;
+
+                    await userIdValidator.validate(user_id);
 
                     const getUserResponse = await natsConnection.request(
                         "item-store.get_user",
@@ -148,14 +159,16 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
             for await (const message of subscription) {
                 try {
                     const natsConnection = getConnection();
-                    const [, , itemDocumentId] = String(message.subject).split(
-                        "."
-                    );
+                    const [, , inventory_item_id] = String(
+                        message.subject
+                    ).split(".");
+
+                    await inventoryIdValidator.validate(inventory_item_id);
 
                     const getInventoryItemResponse = await natsConnection.request(
                         "item-store.get_inventory_item",
                         jsonCodec.encode({
-                            inventory_item_id: itemDocumentId
+                            inventory_item_id
                         })
                     );
 
@@ -211,14 +224,16 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
             for await (const message of subscription) {
                 try {
                     const natsConnection = getConnection();
-                    const [, , itemDocumentId] = String(message.subject).split(
-                        "."
-                    );
+                    const [, , inventory_item_id] = String(
+                        message.subject
+                    ).split(".");
+
+                    await inventoryIdValidator.validate(inventory_item_id);
 
                     const getInventoryItemResponse = await natsConnection.request(
                         "item-store.get_inventory_item",
                         jsonCodec.encode({
-                            inventory_item_id: itemDocumentId
+                            inventory_item_id
                         })
                     );
 

@@ -1,6 +1,7 @@
 import { Subscription } from "nats";
 
 import { getConnection, jsonCodec, PublicNatsHandler } from "../services/nats";
+import { itemIdValidator } from "../utils/validators";
 
 export const warehousePublicHandlers: PublicNatsHandler[] = [
     [
@@ -10,12 +11,14 @@ export const warehousePublicHandlers: PublicNatsHandler[] = [
             for await (const message of subscription) {
                 try {
                     const natsConnection = getConnection();
-                    const urlParameter = String(message.subject).split(".")[2];
+                    const item_id = Number(message.subject.split(".")[2]);
+
+                    await itemIdValidator.validate(item_id);
 
                     const response = await natsConnection.request(
                         "tokenization-service.get_warehouse_item",
                         jsonCodec.encode({
-                            item_id: urlParameter
+                            item_id
                         })
                     );
 
