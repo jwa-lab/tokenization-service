@@ -5,6 +5,7 @@ import {
     WarehouseStorage
 } from "@jwalab/tokenization-service-contracts";
 import { Subscription } from "nats";
+
 import { SERVICE_NAME } from "../config";
 import { PrivateNatsHandler, jsonCodec } from "../services/nats";
 
@@ -21,22 +22,23 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
                 try {
-                    const warehouseItem = new WarehouseItem(
-                        jsonCodec.decode(message.data) as JSONWarehouseItem
-                    );
+                    const warehouseItem = jsonCodec.decode(
+                        message.data
+                    ) as JSONWarehouseItem;
 
                     console.info(
                         `[TOKENIZATION-SERVICE] Adding item with id ${warehouseItem.item_id}`
                     );
 
-                    await add_item(warehouseItem);
+                    await add_item(new WarehouseItem(warehouseItem));
 
                     message.respond(jsonCodec.encode(warehouseItem));
                 } catch (err) {
                     console.error(err);
+
                     message.respond(
                         jsonCodec.encode({
-                            error: err
+                            error: err.message
                         })
                     );
                 }
@@ -50,23 +52,24 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
         "update_warehouse_item",
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
-                const warehouseItem = new WarehouseItem(
-                    jsonCodec.decode(message.data) as JSONWarehouseItem
-                );
-
-                console.info(
-                    `[TOKENIZATION-SERVICE] Updating item with id ${warehouseItem.item_id}`
-                );
-
                 try {
-                    await update_item(warehouseItem);
+                    const warehouseItem = jsonCodec.decode(
+                        message.data
+                    ) as JSONWarehouseItem;
+
+                    console.info(
+                        `[TOKENIZATION-SERVICE] Updating item with id ${warehouseItem.item_id}`
+                    );
+
+                    await update_item(new WarehouseItem(warehouseItem));
 
                     message.respond(jsonCodec.encode(warehouseItem));
                 } catch (err) {
                     console.error(err);
+
                     message.respond(
                         jsonCodec.encode({
-                            error: err
+                            error: err.message
                         })
                     );
                 }
@@ -98,9 +101,10 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                     );
                 } catch (err) {
                     console.error(err);
+
                     message.respond(
                         jsonCodec.encode({
-                            error: err
+                            error: err.message
                         })
                     );
                 }
@@ -114,17 +118,24 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
         "get_warehouse_item",
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
-                const storage = await warehouseContract.storage<
-                    WarehouseStorage
-                >();
-                const { item_id } = jsonCodec.decode(
-                    message.data
-                ) as JSONWarehouseItem;
-
                 try {
+                    const { item_id } = jsonCodec.decode(
+                        message.data
+                    ) as JSONWarehouseItem;
+
+                    const storage = await warehouseContract.storage<
+                        WarehouseStorage
+                    >();
+
                     const warehouseItem = (await storage.warehouse.get(
                         String(item_id)
                     )) as MichelsonWarehouseItem;
+
+                    if (!warehouseItem) {
+                        throw new Error(
+                            `Warehouse Item with id ${item_id} doesn't exit`
+                        );
+                    }
 
                     const jsonWarehouseItem = WarehouseItem.fromMichelson(
                         warehouseItem
@@ -133,6 +144,12 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                     message.respond(jsonCodec.encode(jsonWarehouseItem));
                 } catch (err) {
                     console.error(err);
+
+                    message.respond(
+                        jsonCodec.encode({
+                            error: err.message
+                        })
+                    );
                 }
             }
         }

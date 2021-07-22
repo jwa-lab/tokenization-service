@@ -216,20 +216,6 @@
                         }
                     }
                 ],
-                "requestBody": {
-                    "description": "Update an inventory item in the blockchain. Inventory items can evolve independently from each other.",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "additionalProperties": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    "required": true
-                },
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -312,7 +298,7 @@
                 }
             }
         },
-        "/tokenization-service": {
+        "/tokenization-service/info": {
             "get": {
                 "tags": ["tokenization-service/info"],
                 "summary": "Get various information about the service.",
