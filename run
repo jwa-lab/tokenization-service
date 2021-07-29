@@ -6,6 +6,15 @@ export WAREHOUSE_TEZOS_SECRET_KEY=edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZ
 export WAREHOUSE_TEZOS_PUBLIC_KEY_HASH=tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb
 # export WAREHOUSE_CONTRACT_ADDRESS=KT1BW8YPoG2hTFu3AXkQbgok9kYvhR1qbgL4
 
+set -euo pipefail
+
+declare -a tags=(
+    $(git rev-parse --verify HEAD --short)
+    $(node -p -e "require('./package.json').version")
+)
+
+declare name=$(node -p -e "require('./package.json').name")
+
 function start() {
     node dist/index.js
 }
@@ -16,6 +25,25 @@ function dev() {
 
 function build() {
     npm run build
+}
+
+function docker-build() {
+    docker build . -t jwalab/$name
+}
+
+function docker-tag() {
+    for tag in ${tags[@]}
+    do
+        docker tag jwalab/$name jwalab/$name:$tag
+    done
+}
+
+function docker-push() {
+    docker push jwalab/$name
+    for tag in ${tags[@]}
+    do
+        docker push jwalab/$name:$tag
+    done
 }
 
 "$@"
