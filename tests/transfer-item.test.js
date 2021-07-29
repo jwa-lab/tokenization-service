@@ -73,7 +73,6 @@ describe("Given Tokenization Service is connected to NATS", () => {
 
                 it("Then updates the inventory item data", () => {
                     beforeAll(async () => {
-                        jest.setTimeout(JEST_TIMEOUT);
                         response = await natsConnection.request(
                             "tokenization-service.update_inventory_item",
                             jsonCodec.encode({
@@ -84,7 +83,6 @@ describe("Given Tokenization Service is connected to NATS", () => {
                                     club: "Real Madrid"
                                 }
                             }),
-                            { timeout: JEST_TIMEOUT }
                         );
                     });
                 });
