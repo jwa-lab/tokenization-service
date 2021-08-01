@@ -22,7 +22,7 @@
         }
     ],
     "paths": {
-        "/tokenization-service/warehouse/${item_id}": {
+        "/tokenization-service/warehouse/{item_id}": {
             "put": {
                 "tags": ["tokenization-service/warehouse"],
                 "summary": "Mint an existing warehouse item",
@@ -35,7 +35,8 @@
                         "required": true,
                         "schema": {
                             "type": "integer",
-                            "format": "int64"
+                            "minimum": 0,
+                            "example": 167
                         }
                     }
                 ],
@@ -70,7 +71,8 @@
                         "required": true,
                         "schema": {
                             "type": "integer",
-                            "format": "int64"
+                            "minimum": 0,
+                            "example": 167
                         }
                     }
                 ],
@@ -108,7 +110,8 @@
                                 "properties": {
                                     "user_id": {
                                         "type": "string",
-                                        "format": "document-id"
+                                        "format": "document-id",
+                                        "example": "Su9ou3oBhOQfbPX0feBE"
                                     }
                                 }
                             }
@@ -126,7 +129,8 @@
                                     "properties": {
                                         "user_id": {
                                             "type": "string",
-                                            "format": "document-id"
+                                            "format": "document-id",
+                                            "example": "Su9ou3oBhOQfbPX0feBE"
                                         }
                                     }
                                 }
@@ -230,7 +234,8 @@
                         "required": true,
                         "schema": {
                             "type": "string",
-                            "format": "document-id"
+                            "format": "document-id",
+                            "example": "eu90u3oBhOQfbPX0juGL"
                         }
                     }
                 ],
@@ -243,16 +248,19 @@
                                     "type": "object",
                                     "properties": {
                                         "item_id": {
-                                            "type": "number",
-                                            "format": "int64"
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "example": 167
                                         },
                                         "instance_number": {
-                                            "type": "number",
-                                            "format": "int64"
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "example": 3
                                         },
                                         "inventory_address": {
                                             "type": "string",
-                                            "format": "kt1-address"
+                                            "format": "kt1-address",
+                                            "example": "KT1KLbEeEgW5h1QLkPuPvqdgurHx6v4hGyic"
                                         }
                                     }
                                 }
@@ -292,16 +300,19 @@
                                     "type": "object",
                                     "properties": {
                                         "item_id": {
-                                            "type": "number",
-                                            "format": "int64"
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "example": 167
                                         },
                                         "instance_number": {
-                                            "type": "number",
-                                            "format": "int64"
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "example": 3
                                         },
                                         "inventory_address": {
                                             "type": "string",
-                                            "format": "kt1-address"
+                                            "format": "kt1-address",
+                                            "example": "KT1KLbEeEgW5h1QLkPuPvqdgurHx6v4hGyic"
                                         },
                                         "data": {
                                             "type": "object",
@@ -334,7 +345,8 @@
                         "required": true,
                         "schema": {
                             "type": "string",
-                            "format": "document-id"
+                            "format": "document-id",
+                            "example": "eu90u3oBhOQfbPX0juGL"
                         }
                     }
                 ],
@@ -375,7 +387,8 @@
                                     "properties": {
                                         "warehouse_address": {
                                             "type": "string",
-                                            "format": "kt1-address"
+                                            "format": "kt1-address",
+                                            "example": "KT1KLbEeEgW5h1QLkPuPvqdgurHx6v4hGyic"
                                         }
                                     }
                                 }

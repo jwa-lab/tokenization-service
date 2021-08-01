@@ -232,7 +232,13 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         "."
                     )[3];
 
+<<<<<<< HEAD
                     const { body } = jsonCodec.decode(
+=======
+                    const {
+                        body
+                    } = jsonCodec.decode(
+>>>>>>> main
                         message.data
                     ) as AirlockPayload;
 
