@@ -26,12 +26,6 @@ interface GetInventoryItemResponse {
     user_id: string;
     item_id: number;
     instance_number: number;
-}
-
-interface GetInventoryItemResponse {
-    user_id: string;
-    item_id: number;
-    instance_number: number;
     data: { [k: string]: string };
 }
 
@@ -91,9 +85,8 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         message.data
                     ) as AirlockPayload;
 
-                    const {
-                        user_id
-                    } = (data.body as unknown) as CreateInventoryRequest;
+                    const { user_id } =
+                        data.body as unknown as CreateInventoryRequest;
 
                     await userIdValidator.validate(user_id);
 
@@ -121,9 +114,11 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         { timeout: 10000 }
                     );
 
-                    const inventoryAddress = (jsonCodec.decode(
-                        newInventoryResponse.data
-                    ) as CreateInventoryResponse).inventory_address;
+                    const inventoryAddress = (
+                        jsonCodec.decode(
+                            newInventoryResponse.data
+                        ) as CreateInventoryResponse
+                    ).inventory_address;
 
                     const updateUserResponse = await natsConnection.request(
                         "item-store.update_user",
@@ -165,20 +160,18 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
 
                     await inventoryIdValidator.validate(inventory_item_id);
 
-                    const getInventoryItemResponse = await natsConnection.request(
-                        "item-store.get_inventory_item",
-                        jsonCodec.encode({
-                            inventory_item_id
-                        })
-                    );
+                    const getInventoryItemResponse =
+                        await natsConnection.request(
+                            "item-store.get_inventory_item",
+                            jsonCodec.encode({
+                                inventory_item_id
+                            })
+                        );
 
-                    const {
-                        item_id,
-                        user_id,
-                        instance_number
-                    } = jsonCodec.decode(
-                        getInventoryItemResponse.data
-                    ) as GetInventoryItemResponse;
+                    const { item_id, user_id, instance_number } =
+                        jsonCodec.decode(
+                            getInventoryItemResponse.data
+                        ) as GetInventoryItemResponse;
 
                     const getUserResponse = await natsConnection.request(
                         "item-store.get_user",
@@ -191,17 +184,66 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         getUserResponse.data
                     ) as { inventory_address: string };
 
-                    const assignInventoryItemResponse = await natsConnection.request(
-                        "tokenization-service.assign_inventory_item",
+                    const assignInventoryItemResponse =
+                        await natsConnection.request(
+                            "tokenization-service.assign_inventory_item",
+                            jsonCodec.encode({
+                                item_id,
+                                instance_number,
+                                inventory_address
+                            }),
+                            { timeout: 10000 }
+                        );
+
+                    message.respond(assignInventoryItemResponse.data);
+                } catch (err) {
+                    console.error(err);
+
+                    message.respond(
                         jsonCodec.encode({
-                            item_id,
-                            instance_number,
-                            inventory_address
+                            error: err.message
+                        })
+                    );
+                }
+            }
+        },
+        {
+            queue: SERVICE_NAME
+        }
+    ],
+    [
+        "PUT",
+        "inventory.*.*",
+        async (subscription: Subscription): Promise<void> => {
+            for await (const message of subscription) {
+                try {
+                    const natsConnection = getConnection();
+
+                    const oldInventoryAddress = String(message.subject).split(
+                        "."
+                    )[2];
+                    const newInventoryAddress = String(message.subject).split(
+                        "."
+                    )[3];
+
+                    const { body } = jsonCodec.decode(
+                        message.data
+                    ) as AirlockPayload;
+
+                    const transferedItem = await natsConnection.request(
+                        "tokenization-service.transfer_inventory_item",
+                        jsonCodec.encode({
+                            old_inventory_address: oldInventoryAddress,
+                            new_inventory_address: newInventoryAddress,
+                            item_id: (body as { item_id: number }).item_id,
+                            instance_number: (
+                                body as { instance_number: number }
+                            ).instance_number
                         }),
                         { timeout: 10000 }
                     );
 
-                    message.respond(assignInventoryItemResponse.data);
+                    message.respond(transferedItem.data);
                 } catch (err) {
                     console.error(err);
 
@@ -230,21 +272,18 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
 
                     await inventoryIdValidator.validate(inventory_item_id);
 
-                    const getInventoryItemResponse = await natsConnection.request(
-                        "item-store.get_inventory_item",
-                        jsonCodec.encode({
-                            inventory_item_id
-                        })
-                    );
+                    const getInventoryItemResponse =
+                        await natsConnection.request(
+                            "item-store.get_inventory_item",
+                            jsonCodec.encode({
+                                inventory_item_id
+                            })
+                        );
 
-                    const {
-                        item_id,
-                        user_id,
-                        instance_number,
-                        data
-                    } = jsonCodec.decode(
-                        getInventoryItemResponse.data
-                    ) as GetInventoryItemResponse;
+                    const { item_id, user_id, instance_number, data } =
+                        jsonCodec.decode(
+                            getInventoryItemResponse.data
+                        ) as GetInventoryItemResponse;
 
                     const getUserResponse = await natsConnection.request(
                         "item-store.get_user",
@@ -257,16 +296,17 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         getUserResponse.data
                     ) as { inventory_address: string };
 
-                    const updateInventoryItemResponse = await natsConnection.request(
-                        "tokenization-service.update_inventory_item",
-                        jsonCodec.encode({
-                            item_id,
-                            instance_number,
-                            inventory_address,
-                            data
-                        }),
-                        { timeout: 10000 }
-                    );
+                    const updateInventoryItemResponse =
+                        await natsConnection.request(
+                            "tokenization-service.update_inventory_item",
+                            jsonCodec.encode({
+                                item_id,
+                                instance_number,
+                                inventory_address,
+                                data
+                            }),
+                            { timeout: 10000 }
+                        );
 
                     message.respond(updateInventoryItemResponse.data);
                 } catch (err) {

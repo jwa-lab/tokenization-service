@@ -146,6 +146,81 @@
                 }
             }
         },
+        "/tokenization-service/inventory/{old_inventory_address}/{new_inventory_address}": {
+            "put": {
+                "tags": ["tokenization-service/inventory"],
+                "summary": "Transfers an item from an inventory to another.",
+                "operationId": "transferInventoryItem",
+                "parameters": [
+                    {
+                        "name": "old_inventory_address",
+                        "in": "path",
+                        "description": "Id of the origin inventory",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "kt1-address",
+                            "example": "KT1XhQyjgyDKfMvqznw36aUFaLG8gerPpqaQ"
+                        }
+                    },
+                    {
+                        "name": "new_inventory_address",
+                        "in": "path",
+                        "description": "Id of the new inventory",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "kt1-address",
+                            "example": "KT1XhQyjgyDKfMvqznw36aUFaLG8gerPpAkS"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Transfers an item from an inventory to another.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "instance_number": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "example": 3
+                                    },
+                                    "item_id": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "example": 167
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
         "/tokenization-service/inventory/{inventory_item_id}": {
             "put": {
                 "tags": ["tokenization-service/inventory"],

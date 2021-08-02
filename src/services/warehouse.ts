@@ -28,9 +28,9 @@ export async function initWarehouseContract(): Promise<void> {
         >("warehouse", {
             owner: WAREHOUSE_TEZOS_PUBLIC_KEY_HASH,
             version: "1",
-            warehouse: (MichelsonMap.fromLiteral(
+            warehouse: MichelsonMap.fromLiteral(
                 {}
-            ) as unknown) as WarehouseBigMap
+            ) as unknown as WarehouseBigMap
         });
     }
 }
