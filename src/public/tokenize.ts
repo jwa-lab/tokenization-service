@@ -96,6 +96,8 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
 
                     await userIdValidator.validate(user_id);
 
+                    await userIdValidator.validate(user_id);
+
                     const getUserResponse = await natsConnection.request(
                         "item-store.get_user",
                         jsonCodec.encode({
@@ -232,13 +234,7 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
                         "."
                     )[3];
 
-<<<<<<< HEAD
                     const { body } = jsonCodec.decode(
-=======
-                    const {
-                        body
-                    } = jsonCodec.decode(
->>>>>>> main
                         message.data
                     ) as AirlockPayload;
 
