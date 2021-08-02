@@ -22,12 +22,6 @@ interface CreateInventoryResponse {
     inventory_address: string;
 }
 
-interface TransferInventoryItemResponse {
-    new_inventory_address: string;
-    item_id: number;
-    instance_number: number;
-}
-
 interface GetInventoryItemResponse {
     user_id: string;
     item_id: number;
@@ -93,8 +87,6 @@ export const tokenizePublicHandlers: PublicNatsHandler[] = [
 
                     const { user_id } =
                         data.body as unknown as CreateInventoryRequest;
-
-                    await userIdValidator.validate(user_id);
 
                     await userIdValidator.validate(user_id);
 

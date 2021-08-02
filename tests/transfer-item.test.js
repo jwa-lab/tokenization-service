@@ -95,7 +95,6 @@ describe("Given a warehouse item is assigned to an inventory", () => {
                 })
             );
         });
-        
         it("Then the item has been transfered to the new inventory", () => {
             expect(jsonCodec.decode(response.data)).toEqual({
                 data: { club: "Real Madrid" }

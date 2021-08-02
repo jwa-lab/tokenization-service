@@ -1,11 +1,7 @@
 {
     "name": "tokenization-service",
     "private": true,
-<<<<<<< HEAD
     "version": "0.0.11",
-=======
-    "version": "0.0.10",
->>>>>>> 4c0c421dba2f44c33bc4fbe6ecfc74f7c8a1716e
     "description": "Tokenization Service for Tezos",
     "main": "dist/index.js",
     "scripts": {
