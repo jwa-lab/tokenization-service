@@ -15,10 +15,7 @@ export async function initInventoryContract(): Promise<string> {
     const inventoryContract = await deployContract<
         InventoryContract,
         InventoryStorage
-    >(
-        "inventory",
-        (MichelsonMap.fromLiteral({}) as unknown) as InventoryStorage
-    );
+    >("inventory", MichelsonMap.fromLiteral({}) as unknown as InventoryStorage);
 
     return inventoryContract.address;
 }
@@ -49,6 +46,23 @@ export async function update_item(
 
     const operation = await inventoryContract.methods
         .update_item(toMichelsonInventoryItem(data), instance_number, item_id)
+        .send();
+
+    await operation.confirmation(1, 1);
+}
+
+export async function transfer_item(
+    old_inventory_address: string,
+    instance_number: number,
+    item_id: number,
+    new_inventory_address: string
+): Promise<void> {
+    const inventoryContract = await getContract<InventoryContract>(
+        old_inventory_address
+    );
+
+    const operation = await inventoryContract.methods
+        .transfer_item(instance_number, item_id, new_inventory_address)
         .send();
 
     await operation.confirmation(1, 1);

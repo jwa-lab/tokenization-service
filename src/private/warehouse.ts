@@ -123,9 +123,8 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                         message.data
                     ) as JSONWarehouseItem;
 
-                    const storage = await warehouseContract.storage<
-                        WarehouseStorage
-                    >();
+                    const storage =
+                        await warehouseContract.storage<WarehouseStorage>();
 
                     const warehouseItem = (await storage.warehouse.get(
                         String(item_id)
@@ -137,9 +136,8 @@ export const warehousePrivateHandlers: PrivateNatsHandler[] = [
                         );
                     }
 
-                    const jsonWarehouseItem = WarehouseItem.fromMichelson(
-                        warehouseItem
-                    );
+                    const jsonWarehouseItem =
+                        WarehouseItem.fromMichelson(warehouseItem);
 
                     message.respond(jsonCodec.encode(jsonWarehouseItem));
                 } catch (err) {

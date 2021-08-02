@@ -25,20 +25,18 @@ export const inventoryPublicHandlers: PublicNatsHandler[] = [
                 try {
                     await inventoryIdValidator.validate(inventory_item_id);
 
-                    const itemStoreGetInventoryItemResponse = await natsConnection.request(
-                        "item-store.get_inventory_item",
-                        jsonCodec.encode({
-                            inventory_item_id
-                        })
-                    );
+                    const itemStoreGetInventoryItemResponse =
+                        await natsConnection.request(
+                            "item-store.get_inventory_item",
+                            jsonCodec.encode({
+                                inventory_item_id
+                            })
+                        );
 
-                    const {
-                        user_id,
-                        instance_number,
-                        item_id
-                    } = jsonCodec.decode(
-                        itemStoreGetInventoryItemResponse.data
-                    ) as GetInventoryItemResponse;
+                    const { user_id, instance_number, item_id } =
+                        jsonCodec.decode(
+                            itemStoreGetInventoryItemResponse.data
+                        ) as GetInventoryItemResponse;
 
                     const getUserResponse = await natsConnection.request(
                         "item-store.get_user",
@@ -51,14 +49,15 @@ export const inventoryPublicHandlers: PublicNatsHandler[] = [
                         getUserResponse.data
                     ) as UserResponse;
 
-                    const tokenizationServiceGetInventoryItemResponse = await natsConnection.request(
-                        "tokenization-service.get_inventory_item",
-                        jsonCodec.encode({
-                            inventory_address,
-                            item_id,
-                            instance_number
-                        })
-                    );
+                    const tokenizationServiceGetInventoryItemResponse =
+                        await natsConnection.request(
+                            "tokenization-service.get_inventory_item",
+                            jsonCodec.encode({
+                                inventory_address,
+                                item_id,
+                                instance_number
+                            })
+                        );
 
                     message.respond(
                         tokenizationServiceGetInventoryItemResponse.data
