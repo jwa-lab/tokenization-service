@@ -5,7 +5,8 @@ import {
     assign_item,
     initInventoryContract,
     update_item,
-    get_item
+    get_item,
+    transfer_item
 } from "../services/inventory";
 import { jsonCodec, PrivateNatsHandler } from "../services/nats";
 import { SERVICE_NAME } from "../config";
@@ -27,6 +28,13 @@ interface GetItemRequest {
     inventory_address: string;
     item_id: number;
     instance_number: number;
+}
+
+interface TransferItemRequest {
+    old_inventory_address: string;
+    instance_number: number;
+    item_id: number;
+    new_inventory_address: string;
 }
 
 export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
@@ -64,11 +72,8 @@ export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
         "assign_inventory_item",
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
-                const {
-                    instance_number,
-                    inventory_address,
-                    item_id
-                } = jsonCodec.decode(message.data) as AssignItemRequest;
+                const { instance_number, inventory_address, item_id } =
+                    jsonCodec.decode(message.data) as AssignItemRequest;
 
                 try {
                     await assign_item(
@@ -100,12 +105,8 @@ export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
         "update_inventory_item",
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
-                const {
-                    instance_number,
-                    inventory_address,
-                    item_id,
-                    data
-                } = jsonCodec.decode(message.data) as UpdateItemRequest;
+                const { instance_number, inventory_address, item_id, data } =
+                    jsonCodec.decode(message.data) as UpdateItemRequest;
 
                 try {
                     await update_item(
@@ -138,11 +139,8 @@ export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
         "get_inventory_item",
         async (subscription: Subscription): Promise<void> => {
             for await (const message of subscription) {
-                const {
-                    instance_number,
-                    inventory_address,
-                    item_id
-                } = jsonCodec.decode(message.data) as GetItemRequest;
+                const { instance_number, inventory_address, item_id } =
+                    jsonCodec.decode(message.data) as GetItemRequest;
 
                 try {
                     const item = await get_item(
@@ -156,6 +154,41 @@ export const inventoryPrivateHandlers: PrivateNatsHandler[] = [
                     );
 
                     message.respond(jsonCodec.encode(item));
+                } catch (err) {
+                    console.error(err);
+                    message.respond(
+                        jsonCodec.encode({
+                            error: err.message
+                        })
+                    );
+                }
+            }
+        }
+    ],
+    [
+        "transfer_inventory_item",
+        async (subscription: Subscription): Promise<void> => {
+            for await (const message of subscription) {
+                const {
+                    old_inventory_address,
+                    new_inventory_address,
+                    instance_number,
+                    item_id
+                } = jsonCodec.decode(message.data) as TransferItemRequest;
+
+                try {
+                    await transfer_item(
+                        old_inventory_address,
+                        instance_number,
+                        item_id,
+                        new_inventory_address
+                    );
+                    
+                    console.log(
+                        `[TOKENIZATION-SERVICE] Transfer item ${item_id}, instance number ${instance_number} from contract ${old_inventory_address} to ${new_inventory_address}`
+                    );
+
+                    message.respond(message.data);
                 } catch (err) {
                     console.error(err);
                     message.respond(
