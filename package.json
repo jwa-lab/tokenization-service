@@ -38,7 +38,7 @@
     },
     "homepage": "https://github.com/jwa-lab/tokenization-service#readme",
     "devDependencies": {
-        "@jwalab/minilab": "^0.0.8",
+        "@jwalab/minilab": "^0.0.9",
         "@tsconfig/node14": "^1.0.0",
         "@typescript-eslint/eslint-plugin": "^4.1.1",
         "@typescript-eslint/parser": "^4.1.1",
