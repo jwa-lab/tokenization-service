@@ -4,14 +4,15 @@ const { JEST_TIMEOUT = 20000 } = process.env;
 describe("Given a warehouse item is assigned to an inventory", () => {
     let natsConnection;
     let jsonCodec = JSONCodec();
-    let newItemId = 27;
+    let newItemId = 28;
     let oldInventoryAddress;
     let oldInventoryResponse;
 
     beforeAll(async () => {
-        natsConnection = await connect();
-
         jest.setTimeout(JEST_TIMEOUT);
+
+        natsConnection = await connect();
+        
         await natsConnection.request(
             "tokenization-service.add_warehouse_item",
             jsonCodec.encode({
@@ -29,7 +30,7 @@ describe("Given a warehouse item is assigned to an inventory", () => {
         oldInventoryResponse = await natsConnection.request(
             "tokenization-service.create_inventory",
             undefined,
-            { timeout: JEST_TIMEOUT }
+            { max: 1, timeout: JEST_TIMEOUT }
         );
 
         oldInventoryAddress = jsonCodec.decode(
@@ -43,7 +44,7 @@ describe("Given a warehouse item is assigned to an inventory", () => {
                 item_id: newItemId,
                 instance_number: 1
             }),
-            { timeout: JEST_TIMEOUT }
+            { max: 1, timeout: JEST_TIMEOUT }
         );
 
         await natsConnection.request(
@@ -55,7 +56,8 @@ describe("Given a warehouse item is assigned to an inventory", () => {
                 data: {
                     club: "Real Madrid"
                 }
-            })
+            }),
+            { max: 1, timeout: JEST_TIMEOUT }
         );
     });
 
@@ -66,10 +68,11 @@ describe("Given a warehouse item is assigned to an inventory", () => {
 
         beforeAll(async () => {
             jest.setTimeout(JEST_TIMEOUT);
+
             newInventoryResponse = await natsConnection.request(
                 "tokenization-service.create_inventory",
                 undefined,
-                { timeout: JEST_TIMEOUT }
+                { max: 1, timeout: JEST_TIMEOUT }
             );
 
             newInventoryAddress = jsonCodec.decode(
@@ -83,7 +86,8 @@ describe("Given a warehouse item is assigned to an inventory", () => {
                     new_inventory_address: newInventoryAddress,
                     instance_number: 1,
                     item_id: newItemId
-                })
+                }),
+                { max: 1, timeout: JEST_TIMEOUT }
             );
 
             response = await natsConnection.request(
@@ -92,17 +96,19 @@ describe("Given a warehouse item is assigned to an inventory", () => {
                     inventory_address: newInventoryAddress,
                     item_id: newItemId,
                     instance_number: 1
-                })
+                }),
+                { max: 1, timeout: JEST_TIMEOUT }
             );
         });
+        
         it("Then the item has been transfered to the new inventory", () => {
-            expect(jsonCodec.decode(response.data)).toEqual({
-                data: { club: "Real Madrid" }
+            expect(jsonCodec.decode(response.data)).toEqual({ 
+                club: "Real Madrid" 
             });
         });
     });
 
-    afterAll(() => {
-        natsConnection.close();
+    afterAll(async () => {
+        await natsConnection.close();
     });
 });

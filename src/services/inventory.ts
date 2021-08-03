@@ -54,8 +54,8 @@ export async function update_item(
 export async function transfer_item(
     old_inventory_address: string,
     new_inventory_address: string,
-    item_id: number,
-    instance_number: number
+    instance_number: number,
+    item_id: number
 ): Promise<void> {
     const inventoryContract = await getContract<InventoryContract>(
         old_inventory_address

@@ -38,7 +38,7 @@ describe("Given Tokenization Service is connected to NATS", () => {
                 response = await natsConnection.request(
                     "tokenization-service.create_inventory",
                     undefined,
-                    { timeout: JEST_TIMEOUT }
+                    { max: 1, timeout: JEST_TIMEOUT }
                 );
 
                 inventoryAddress = jsonCodec.decode(
@@ -60,7 +60,7 @@ describe("Given Tokenization Service is connected to NATS", () => {
                             item_id: newItemId,
                             instance_number: 1
                         }),
-                        { timeout: JEST_TIMEOUT }
+                        { max: 1, timeout: JEST_TIMEOUT }
                     );
                 });
 
@@ -102,7 +102,7 @@ describe("Given Tokenization Service is connected to NATS", () => {
                                     club: "Real Madrid"
                                 }
                             }),
-                            { timeout: JEST_TIMEOUT }
+                            { max: 1, timeout: JEST_TIMEOUT }
                         );
                     });
 
